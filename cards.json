@@ -1,0 +1,32 @@
+{
+    "Joey": {
+        "name": "Joey",
+        "stat1": 70,
+        "stat2": 50
+    },
+    "Chandler": {
+        "name": "Chandler",
+        "stat1": 60,
+        "stat2": 60
+    },
+    "Monica": {
+        "name": "Monica",
+        "stat1": 80,
+        "stat2": 40
+    },
+    "Rachel": {
+        "name": "Rachel",
+        "stat1": 90,
+        "stat2": 30
+    },
+    "Ross": {
+        "name": "Ross",
+        "stat1": 40,
+        "stat2": 80
+    },
+    "Phoebe": {
+        "name": "Phoebe",
+        "stat1": 50,
+        "stat2": 70
+    }
+}
