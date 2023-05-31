@@ -9,8 +9,9 @@ def main():
     random.seed(cfg.RANDOM_SEED)
     topTrump = Game()
 
-    #Start the game
-    topTrump.startGame()
+    # Start the game with default configuration
+    topTrump.startGame(cfg.GameConfig())
 
-if __name__=='__main__':
+
+if __name__ == "__main__":
     main()

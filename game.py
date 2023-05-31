@@ -2,24 +2,36 @@ import numpy as np
 import random
 
 from utils import loadCards
-import cfg
+from cfg import GameConfig
 from classes import Player, Card
+
 
 # Main class to track the game
 class Game:
     def __init__(self):
         self.playerList = []
+        self.config = GameConfig()
 
     # Initialize and start the game
-    def startGame(self):
-        CARD_COUNT, cardList = loadCards()
+    def startGame(self, config: GameConfig):
+        loaded_card_count, cardList = loadCards()
+        self.config = config
 
-        if CARD_COUNT > cfg.CARD_COUNT:
-            CARD_COUNT = cfg.CARD_COUNT
+        if loaded_card_count > self.config.card_count:
+            loaded_card_count = self.config.card_count
 
         # Initialize players with cards from the cardList.
-        for i in range (cfg.PLAYER_COUNT):
-            self.playerList.append(Player('Player ' + str(i), cardList[i * int(CARD_COUNT / cfg.PLAYER_COUNT) : (i + 1) * int(CARD_COUNT / cfg.PLAYER_COUNT)]))
+        for i in range(self.config.player_count):
+            self.playerList.append(
+                Player(
+                    "Player " + str(i),
+                    cardList[
+                        i
+                        * int(loaded_card_count / self.config.player_count) : (i + 1)
+                        * int(loaded_card_count / self.config.player_count)
+                    ],
+                )
+            )
 
         self.gameLoop()
 
@@ -37,7 +49,7 @@ class Game:
 
             # Choose which stat to play
             stat = player.makeDecision(activeCard)
-            
+
             # Gather all the cards to check the stats of
             playedCards = [activeCard]
             for otherPlayer in self.playerList:
@@ -47,7 +59,7 @@ class Game:
                 otherPlayer.cardList = otherPlayer.cardList[1:]
 
             # Print played cards if debug mode is on.
-            if cfg.DEBUG:
+            if self.config.debug:
                 print("Played Cards:")
                 for card in playedCards:
                     card.print()
@@ -60,22 +72,23 @@ class Game:
                 if card.stats[stat] > best:
                     best = card.stats[stat]
                     winner = i
-            
-            if cfg.DEBUG:
+
+            if self.config.debug:
                 print("The winner is: Player", winner)
 
             if self.updateGameState(playedCards, winner):
                 break
 
-
     def updateGameState(self, playedCards, winner):
         # Add all won cards to the list of the winner.
-        self.playerList[winner].cardList = np.concatenate((self.playerList[winner].cardList, playedCards))
+        self.playerList[winner].cardList = np.concatenate(
+            (self.playerList[winner].cardList, playedCards)
+        )
 
         # Reshuffle the cards from the winner.
         random.shuffle(self.playerList[winner].cardList)
 
-        if cfg.DEBUG:
+        if self.config.debug:
             self.print()
 
         # Check if any players are elimated.
@@ -89,7 +102,7 @@ class Game:
         if len(self.playerList) == 1:
             print("Game is over, ", self.playerList[0].name, "won the game!")
             return True
-        
+
         return False
 
     # Debug function to print the game status.
