@@ -118,6 +118,10 @@ class Game:
 
     # Debug function to print the game status.
     def print(self):
-        print("Game:")
+        print(self.to_string())
+
+    def to_string(self) -> str:
+        state = "Game:"
         for player in self.playerList:
-            player.print()
+            state += "\n" + player.to_string()
+        return state
