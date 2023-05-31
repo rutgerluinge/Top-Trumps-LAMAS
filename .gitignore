@@ -2,3 +2,6 @@
 __pycache__/
 .vs/
 .git
+
+# debug data
+*.out
