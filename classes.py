@@ -1,6 +1,7 @@
 import random
 import numpy as np
 
+
 # Player class to create an instance for each player participating in the game.
 class Player:
     def __init__(self, name, cardList):
@@ -14,9 +15,14 @@ class Player:
 
     # Debug print function for players
     def print(self):
-        print(self.name)
+        print(self.to_string())
+
+    def to_string(self) -> str:
+        state = self.name
         for card in self.cardList:
-            card.print()
+            state += "\n" + card.to_string()
+        return state
+
 
 # Card class to create an instance of each available card.
 class Card:
@@ -26,6 +32,10 @@ class Card:
 
     # Debug function to print card stats.
     def print(self):
-        print("  Card:", self.name)
+        print(self.to_string())
+
+    def to_string(self) -> str:
+        state = "  Card: " + self.name
         for i, stat in enumerate(self.stats):
-            print("    stat" + str(i) + ":", stat)
+            state += str("\n    stat" + str(i) + ": " + str(stat))
+        return state
