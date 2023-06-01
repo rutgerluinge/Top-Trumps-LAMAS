@@ -1,17 +1,24 @@
+from typing import List
+
 import numpy as np
 import random
 
 from utils import loadCards
-from cfg import GameConfig
-from classes import Player, Card
+from cfg import GameConfig, CardConfig
+from cards import Card, init_cards
+from agents import Player, AbstractAgent
 
 
 # Main class to track the game
 class Game:
     def __init__(self):
-        self.playerList = []
+        self.playerList: List[AbstractAgent] = []
         self.config = GameConfig()
-        self.currentPlayer = -1
+        self.eliminated_players = dict()
+        self.round = 1
+        self.next_round_starter = "Player 0"    #gets to start first #just for logging this line
+        self.last_winner = None
+        self.last_chosen_stat = -1
 
     # Initialize and start the game
     def startGame(self, config: GameConfig):
@@ -19,23 +26,16 @@ class Game:
         self.gameLoop()
 
     def initializeGame(self, config: GameConfig):
-        loaded_card_count, cardList = loadCards()
+        card_list = init_cards(config.player_count, config.cards_pp, config.stats_count, config.stat_points)
         self.config = config
 
-        if loaded_card_count > self.config.card_count:
-            loaded_card_count = self.config.card_count
-
         # Initialize players with cards from the cardList.
-        for i in range(self.config.player_count):
+        for idx in range(self.config.player_count):
+            name = f"Player {idx}"
             self.playerList.append(
-                Player(
-                    "Player " + str(i),
-                    cardList[
-                        i
-                        * int(loaded_card_count / self.config.player_count) : (i + 1)
-                        * int(loaded_card_count / self.config.player_count)
-                    ],
-                )
+                Player(name=name,
+                       card_list=card_list[idx * config.cards_pp: (idx + 1) * config.cards_pp],
+                       config=GameConfig())
             )
 
     def gameLoop(self):
@@ -45,83 +45,97 @@ class Game:
             if self.updateGameState(playedCards, winner):
                 break
 
+    def start_player(self, start_player_idx=0):
+        """method which return player idx which should start next round, if no winner yet (first round) player 0
+        starts """
+        if self.last_winner is None:
+            return self.playerList[start_player_idx]
+        return self.last_winner
+
     def playRound(self):
         # The next player takes a turn.
-        self.currentPlayer = (self.currentPlayer + 1) % len(self.playerList)
-        player = self.playerList[self.currentPlayer]
+        start_player: AbstractAgent = self.start_player()
 
-        # Card to play from current player
-        activeCard = player.cardList[0]
-        player.cardList = player.cardList[1:]
+        stat_idx = start_player.start_turn()
+        self.last_chosen_stat = stat_idx #for mesa for now
 
-        # Choose which stat to play
-        stat = player.makeDecision(activeCard)
-
-        # Gather all the cards to check the stats of
-        playedCards = [activeCard]
-        for otherPlayer in self.playerList:
-            if otherPlayer == player:
+        round_result = {}
+        for player in self.playerList:
+            if player.get_name() in self.eliminated_players:
                 continue
-            playedCards.append(otherPlayer.cardList[0])
-            otherPlayer.cardList = otherPlayer.cardList[1:]
+            round_result[player.get_name()] = player.match_stat(stat_idx=stat_idx)
 
-        # Print played cards if debug mode is on.
-        if self.config.debug:
-            print("Played Cards:")
-            for card in playedCards:
-                card.print()
-            print("Chosen stat:", stat)
+        round_result = dict(sorted(round_result.items(), key=lambda x: x[1], reverse=True))  # todo change this for ties!
 
-        # Find who won the round.
-        winner = -1
-        best = 0
-        for i, card in enumerate(playedCards):
-            if card.stats[stat] > best:
-                best = card.stats[stat]
-                winner = i
+        winner_name = next(iter(round_result))
+        self.next_round_starter = winner_name
+        card_pool = []
+        winner: AbstractAgent
 
-        if self.config.debug:
-            print("The winner is: Player", winner)
-        return playedCards, winner
+        """Get all cards, and 'remember' winner"""
+        for player in self.playerList:
+            if player.get_name() == winner_name:
+                winner = player
+            if player.get_name() in self.eliminated_players:
+                continue
+            card_pool.append(player.hand_card())
 
-    def updateGameState(self, playedCards, winner):
+        return card_pool, winner
+
+    def updateGameState(self, card_pool: List[Card], winner: AbstractAgent):
         # Add all won cards to the list of the winner.
-        self.playerList[winner].cardList = np.concatenate(
-            (self.playerList[winner].cardList, playedCards)
-        )
-
-        # Reshuffle the cards from the winner.
-        random.shuffle(self.playerList[winner].cardList)
+        winner.give_cards(cards=card_pool)  #updates and shuffles
 
         if self.config.debug:
             self.print()
 
-        # Check if any players are elimated.
-        for i in range(len(self.playerList)):
-            if len(self.playerList[i].cardList) == 0:
-                print("Game over for: Player", i)
-                del self.playerList[i]
-                i -= 1
+        winner, players = self.players_in_game()
+
+        for key, value in self.eliminated_players.items():
+            if value == self.round:
+                print(f"player: {key}, got eliminated in round {value}")
 
         # check if we have a winner
-        if self.hasWinner():
-            print("Game is over, ", self.playerList[0].name, "won the game!")
+        if winner:
+            print("Game is over, ", players[0], "won the game!")
             return True
-        return False
-
-    def hasWinner(self):
-        # Check if game is won.
-        if len(self.playerList) == 1:
-            return True
+        self.round += 1
 
         return False
+
+    def players_in_game(self) -> (bool, List[Player]):
+        """:returns players that are still playing (and only 1 if there is a winner) + boolean if winner is found"""
+        still_playing = []
+        for player in self.playerList:
+            if player.has_cards():
+                still_playing.append(player)
+            elif player.get_name() not in self.eliminated_players.keys():
+                self.eliminated_players[player.get_name()] = self.round
+
+        if len(still_playing) == 1:  # winner known:
+            return True, still_playing
+
+        return False, still_playing
 
     # Debug function to print the game status.
     def print(self):
         print(self.to_string())
 
+    def print_interface(self):
+        """print mesa interface (bit prettier for now)"""
+        state = ""
+        state += f"Player which may choose next round: {self.next_round_starter} \n"
+        state += f"Round {self.round} \n"
+
+        state += f"\t  chosen stat: {CardConfig.stat_names[self.last_chosen_stat]}"
+        for player in self.playerList:
+            state += "\n\t" + player.to_string()
+        return state
+
+
+
     def to_string(self) -> str:
         state = "Game:"
         for player in self.playerList:
-            state += "\n" + player.to_string()
+            state += "\n\t" + str(player)
         return state

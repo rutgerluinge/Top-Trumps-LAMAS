@@ -26,9 +26,12 @@ Main game class, handling most of the game.
 ### cfg.py
 Settings file with all global parameters
 
-### classes.py
-Contains both the player class and the card class
+### cards.py
+contains the card class and more methods for card generation
 
+### agent.py
+contains the Player/agent class and will contain different behavior for different type
+of agents.
 ### utils.py
 Helper functions not belonging to a class
 

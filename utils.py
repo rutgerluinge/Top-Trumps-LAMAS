@@ -1,7 +1,7 @@
 import json
 import random
 
-from classes import Card
+from cards import Card
 import cfg
 
 def loadCards():
