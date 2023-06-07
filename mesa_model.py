@@ -22,6 +22,7 @@ class PlayerAgent(mesa.Agent):
 class TopTrumpsModel(mesa.Model):
     # by default creates a game with default settings
     def __init__(self) -> None:
+        super().__init__(self)
         self.from_config(cfg.GameConfig())
         # map datacollector to print functions
         self.datacollector = mesa.DataCollector(
@@ -30,7 +31,6 @@ class TopTrumpsModel(mesa.Model):
 
     # initialize a game with configuration
     def from_config(self, config: cfg.GameConfig):
-        super().__init__(self)
         self.game = game.Game()
         self.game.initializeGame(config)
         return self
@@ -40,6 +40,9 @@ class TopTrumpsModel(mesa.Model):
         playedCards, winner = self.game.playRound()
         self.game.updateGameState(playedCards, winner)
         self.datacollector.collect(self)
+        # automatically end a simulation if there is a winner
+        if (self.game.players_in_game()[0]):
+            self.running = False
 
 
 # steps the model until there is a winner
