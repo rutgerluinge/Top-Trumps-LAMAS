@@ -2,7 +2,7 @@ from typing import List
 
 import numpy as np
 
-from cards import Card
+from cards import Card, Deck
 from abc import ABC, abstractmethod
 
 from cfg import GameConfig
@@ -28,18 +28,23 @@ class AbstractAgent(ABC):
     def get_name(self) -> str:
         pass
 
+    @abstractmethod
+    def get_deck(self) -> Deck:
+        pass
+
     def hand_card(self):
         pass
 
-    def give_cards(self, cards: List[Card]):
+    def give_cards(self, cards: Deck):
         pass
 
-    def to_string(self):
+    def __str__(self) -> str:
         pass
+
 
 
 class Player(AbstractAgent):
-    def __init__(self, name: str, card_list: List[Card], config:GameConfig):
+    def __init__(self, name: str, card_list: Deck, config: GameConfig):
         self.name = name
         self.cardList = card_list
         self.config = config
@@ -70,7 +75,10 @@ class Player(AbstractAgent):
 
     # Debug print function for players
     def __str__(self) -> str:
-        return f"name: {self.name}, cards: {[str(card) for card in self.cardList]}"
+        state = self.name
+        for card in self.cardList:
+            state += "\t\n" + str(card)
+        return state
 
     def has_cards(self) -> bool:
         """:returns bool to see if player is still in the game (instead of removing player)"""
@@ -80,14 +88,11 @@ class Player(AbstractAgent):
         """:returns card and removes from top deck"""
         return self.cardList.pop(0)
 
-    def to_string(self) -> str:
-        state = self.name
-        for card in self.cardList:
-            state += "\t\n" + card.to_string()
-        return state
-
     def get_name(self) -> str:
         return self.name
+
+    def get_deck(self) -> Deck:
+        return self.cardList
 
 class DumbAgent(AbstractAgent):
     def make_decision(self, card: Card):

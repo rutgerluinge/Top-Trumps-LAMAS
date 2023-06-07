@@ -25,7 +25,7 @@ class TopTrumpsModel(mesa.Model):
         self.from_config(cfg.GameConfig())
         # map datacollector to print functions
         self.datacollector = mesa.DataCollector(
-            model_reporters={"State": self.game.to_string}
+            model_reporters={"State": self.game.__str__}
         )
 
     # initialize a game with configuration
@@ -62,9 +62,9 @@ class RenderState(mesa.visualization.TextElement):
     def render(self, model: TopTrumpsModel):
         # if the game has a winner, announce it
         if model.game.players_in_game()[0]:
-            return str(
+            return to_html(str(
                 "Game is over, " + model.game.playerList[0].get_name() + "won the game!"
-            )
+            ))
 
         # render the current game state
         return to_html(model.game.print_interface())
@@ -78,11 +78,7 @@ def main():
 
     # run and output to CLI
     model = TopTrumpsModel()
-    # model.game.print_interface()
     run_to_completion(model)
-    # print a summary of collected states
-    states = model.datacollector.get_model_vars_dataframe()
-    # print(f"states: {states}")
 
     # run as a server with rudimentary visualization
     server = mesa.visualization.ModularServer(
