@@ -1,6 +1,7 @@
 import mesa
 import game
-import classes
+from agents import Player
+import cards
 import random
 import cfg
 
@@ -10,9 +11,9 @@ import cfg
 class PlayerAgent(mesa.Agent):
     def __init__(self, unique_id: int, model: mesa.Model) -> None:
         super().__init__(unique_id, model)
-        self.player = classes.Player()
+        self.player = Player(name="dummy", card_list=[])
 
-    def step():
+    def step(self):
         # nothing needed just yet, model takes care of agents
         pass
 
@@ -43,13 +44,14 @@ class TopTrumpsModel(mesa.Model):
 
 # steps the model until there is a winner
 def run_to_completion(model: TopTrumpsModel):
-    while not model.game.hasWinner():
+    while not model.game.players_in_game()[0]:
         model.step()
 
 
 def to_html(input: str):
     # replace newlines with paragraph breaks (html)
-    return input.replace("\n", "<br/>")
+    html = input.replace("\n", "<br/>")
+    return html
 
 
 class RenderState(mesa.visualization.TextElement):
@@ -59,13 +61,13 @@ class RenderState(mesa.visualization.TextElement):
     # renders the state of the game as text
     def render(self, model: TopTrumpsModel):
         # if the game has a winner, announce it
-        if model.game.hasWinner():
+        if model.game.players_in_game()[0]:
             return str(
-                "Game is over, " + model.game.playerList[0].name + "won the game!"
+                "Game is over, " + model.game.playerList[0].get_name() + "won the game!"
             )
 
         # render the current game state
-        return to_html(model.game.to_string())
+        return to_html(model.game.print_interface())
 
 
 # main function to play a game as a mesa server
@@ -76,11 +78,11 @@ def main():
 
     # run and output to CLI
     model = TopTrumpsModel()
-    model.game.print()
+    # model.game.print_interface()
     run_to_completion(model)
     # print a summary of collected states
     states = model.datacollector.get_model_vars_dataframe()
-    print(states)
+    # print(f"states: {states}")
 
     # run as a server with rudimentary visualization
     server = mesa.visualization.ModularServer(
