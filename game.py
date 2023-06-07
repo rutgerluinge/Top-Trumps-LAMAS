@@ -29,6 +29,7 @@ class Game:
     def initializeGame(self, config: GameConfig):
         card_list = init_cards(config.player_count, config.cards_pp, config.stats_count, config.stat_points)
         self.state.deck = card_list
+        self.state.players = []
         self.config = config
 
         # Initialize players with cards from the cardList.
@@ -96,13 +97,13 @@ class Game:
 
         # check if we have a winner
         if winner:
-            print("Game is over, ", players[0], "won the game!")
+            print("Game is over, ", players[0].get_name(), " won the game!")
             return True
         self.round += 1
 
         return False
 
-    def players_in_game(self) -> tuple((bool, List[Player])):
+    def players_in_game(self) -> tuple[bool, List[Player]]:
         """:returns players that are still playing (and only 1 if there is a winner) + boolean if winner is found"""
         still_playing = []
         for player in self.state.players:
@@ -127,7 +128,6 @@ class Game:
         state += f"Round {self.round} \n"
 
         state += f"\t  chosen stat: {CardConfig.stat_names[self.last_chosen_stat]}"
-        
         for player in self.state.players:
             state += "\n\t" + str(player)
         return state
