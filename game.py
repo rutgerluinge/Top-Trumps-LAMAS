@@ -3,6 +3,7 @@ from typing import List
 import numpy as np
 import random
 
+from state import GameState
 from utils import loadCards
 from cfg import GameConfig, CardConfig
 from cards import Card, init_cards
@@ -12,7 +13,7 @@ from agents import Player, AbstractAgent
 # Main class to track the game
 class Game:
     def __init__(self):
-        self.playerList: List[AbstractAgent] = []
+        self.state = GameState()
         self.config = GameConfig()
         self.eliminated_players = dict()
         self.round = 1
@@ -27,19 +28,19 @@ class Game:
 
     def initializeGame(self, config: GameConfig):
         card_list = init_cards(config.player_count, config.cards_pp, config.stats_count, config.stat_points)
+        self.state.deck = card_list
+        self.state.players = []
         self.config = config
 
         # Initialize players with cards from the cardList.
         for idx in range(self.config.player_count):
             name = f"Player {idx}"
-            self.playerList.append(
-                Player(name=name,
+            player = Player(name=name,
                        card_list=card_list[idx * config.cards_pp: (idx + 1) * config.cards_pp],
                        config=GameConfig())
-            )
+            self.state.players.append(player)
 
     def gameLoop(self):
-        self.print()
         while True:
             playedCards, winner = self.playRound()
             if self.updateGameState(playedCards, winner):
@@ -49,7 +50,7 @@ class Game:
         """method which return player idx which should start next round, if no winner yet (first round) player 0
         starts """
         if self.last_winner is None:
-            return self.playerList[start_player_idx]
+            return self.state.players[start_player_idx]
         return self.last_winner
 
     def playRound(self):
@@ -60,20 +61,19 @@ class Game:
         self.last_chosen_stat = stat_idx #for mesa for now
 
         round_result = {}
-        for player in self.playerList:
+        for player in self.state.players:
             if player.get_name() in self.eliminated_players:
                 continue
             round_result[player.get_name()] = player.match_stat(stat_idx=stat_idx)
 
         round_result = dict(sorted(round_result.items(), key=lambda x: x[1], reverse=True))  # todo change this for ties!
-
         winner_name = next(iter(round_result))
         self.next_round_starter = winner_name
         card_pool = []
         winner: AbstractAgent
 
         """Get all cards, and 'remember' winner"""
-        for player in self.playerList:
+        for player in self.state.players:
             if player.get_name() == winner_name:
                 winner = player
             if player.get_name() in self.eliminated_players:
@@ -97,16 +97,16 @@ class Game:
 
         # check if we have a winner
         if winner:
-            print("Game is over, ", players[0], "won the game!")
+            print("Game is over, ", players[0].get_name(), " won the game!")
             return True
         self.round += 1
 
         return False
 
-    def players_in_game(self) -> (bool, List[Player]):
+    def players_in_game(self) -> tuple[bool, List[Player]]:
         """:returns players that are still playing (and only 1 if there is a winner) + boolean if winner is found"""
         still_playing = []
-        for player in self.playerList:
+        for player in self.state.players:
             if player.has_cards():
                 still_playing.append(player)
             elif player.get_name() not in self.eliminated_players.keys():
@@ -119,7 +119,7 @@ class Game:
 
     # Debug function to print the game status.
     def print(self):
-        print(self.to_string())
+        print(str(self))
 
     def print_interface(self):
         """print mesa interface (bit prettier for now)"""
@@ -128,14 +128,10 @@ class Game:
         state += f"Round {self.round} \n"
 
         state += f"\t  chosen stat: {CardConfig.stat_names[self.last_chosen_stat]}"
-        for player in self.playerList:
-            state += "\n\t" + player.to_string()
+        for player in self.state.players:
+            state += "\n\t" + str(player)
         return state
 
-
-
-    def to_string(self) -> str:
-        state = "Game:"
-        for player in self.playerList:
-            state += "\n\t" + str(player)
+    def __str__(self) -> str:
+        state = "Game: \n" + str(self.state)
         return state

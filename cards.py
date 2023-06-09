@@ -11,15 +11,15 @@ class Card:
         self.name = name
         self.stats = np.array(stats)
 
-
-
-    def to_string(self) -> str:
+    def __str__(self) -> str:
         state = "  Card: " + self.name
         for i, stat in enumerate(self.stats):
             state += f" {CardConfig.stat_names[i]} = {stat},"
 
         return state
 
+# Type alias
+Deck = list[Card]
 
 def random_stats(total_stats: int, stat_points: int):
     """method to randomly create stats (evenly)"""

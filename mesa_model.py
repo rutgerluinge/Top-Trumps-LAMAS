@@ -22,15 +22,15 @@ class PlayerAgent(mesa.Agent):
 class TopTrumpsModel(mesa.Model):
     # by default creates a game with default settings
     def __init__(self) -> None:
+        super().__init__(self)
         self.from_config(cfg.GameConfig())
         # map datacollector to print functions
         self.datacollector = mesa.DataCollector(
-            model_reporters={"State": self.game.to_string}
+            model_reporters={"State": self.game.__str__}
         )
 
     # initialize a game with configuration
     def from_config(self, config: cfg.GameConfig):
-        super().__init__(self)
         self.game = game.Game()
         self.game.initializeGame(config)
         return self
@@ -40,6 +40,9 @@ class TopTrumpsModel(mesa.Model):
         playedCards, winner = self.game.playRound()
         self.game.updateGameState(playedCards, winner)
         self.datacollector.collect(self)
+        # automatically end a simulation if there is a winner
+        if (self.game.players_in_game()[0]):
+            self.running = False
 
 
 # steps the model until there is a winner
@@ -62,9 +65,9 @@ class RenderState(mesa.visualization.TextElement):
     def render(self, model: TopTrumpsModel):
         # if the game has a winner, announce it
         if model.game.players_in_game()[0]:
-            return str(
-                "Game is over, " + model.game.playerList[0].get_name() + "won the game!"
-            )
+            return to_html(str(
+                "Game is over, " + model.game.state.players[0].get_name() + "won the game!"
+            ))
 
         # render the current game state
         return to_html(model.game.print_interface())
@@ -78,11 +81,7 @@ def main():
 
     # run and output to CLI
     model = TopTrumpsModel()
-    # model.game.print_interface()
     run_to_completion(model)
-    # print a summary of collected states
-    states = model.datacollector.get_model_vars_dataframe()
-    # print(f"states: {states}")
 
     # run as a server with rudimentary visualization
     server = mesa.visualization.ModularServer(
