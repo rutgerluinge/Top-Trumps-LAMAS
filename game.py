@@ -1,9 +1,10 @@
-from typing import List
+from typing import List, Tuple
 
 import numpy as np
 import random
 
 from state import GameState
+from strategies import RandomStrategy, HighStatStrategy
 from utils import loadCards
 from cfg import GameConfig, CardConfig
 from cards import Card, init_cards
@@ -35,9 +36,19 @@ class Game:
         # Initialize players with cards from the cardList.
         for idx in range(self.config.player_count):
             name = f"Player {idx}"
-            player = Player(name=name,
-                       card_list=card_list[idx * config.cards_pp: (idx + 1) * config.cards_pp],
-                       config=GameConfig())
+
+            #create "smart" player
+            if idx == 0:
+                player = Player(name=name,
+                                card_list=card_list[idx * config.cards_pp: (idx + 1) * config.cards_pp],
+                                config=GameConfig(),
+                                strategy=HighStatStrategy())
+            else:
+                player = Player(name=name,
+                           card_list=card_list[idx * config.cards_pp: (idx + 1) * config.cards_pp],
+                           config=GameConfig(),
+                           strategy=RandomStrategy())
+
             self.state.players.append(player)
 
     def gameLoop(self):
@@ -103,7 +114,7 @@ class Game:
 
         return False
 
-    def players_in_game(self) -> tuple[bool, List[Player]]:
+    def players_in_game(self) -> tuple[bool, list[AbstractAgent]]:
         """:returns players that are still playing (and only 1 if there is a winner) + boolean if winner is found"""
         still_playing = []
         for player in self.state.players:

@@ -17,7 +17,7 @@ class GameState:
 
     # Returns the game state as a dictionary of cards and players
     # Can be used to iterate the deck and find which player it belongs to
-    def as_dictionary(self) -> dict():
+    def as_dictionary(self) -> dict:
         stateDictionary = dict()
         for player in self.players:
             for card in player.get_deck():

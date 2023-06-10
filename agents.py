@@ -6,6 +6,7 @@ from cards import Card, Deck
 from abc import ABC, abstractmethod
 
 from cfg import GameConfig
+from strategies import Strategy
 
 
 class AbstractAgent(ABC):
@@ -44,10 +45,12 @@ class AbstractAgent(ABC):
 
 
 class Player(AbstractAgent):
-    def __init__(self, name: str, card_list: Deck, config: GameConfig):
+    def __init__(self, name: str, card_list: Deck, config: GameConfig, strategy:Strategy):
         self.name = name
         self.cardList = card_list
         self.config = config
+        self.strategy = strategy
+
 
     # Function to decide which stat to use based on the current card
     # Currently just returns a random one.
@@ -65,7 +68,8 @@ class Player(AbstractAgent):
 
     def start_turn(self) -> int:
         """:returns stat idx TODO now it is random change later with strategy"""
-        return np.random.randint(0, self.config.stats_count)
+
+        return self.strategy.choose_action(top_card=self.get_top_card(), state=None)
 
     def give_cards(self, cards: List[Card]):
         """:param won cards, method adds cards and shuffles them"""
