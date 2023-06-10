@@ -66,8 +66,8 @@ class RenderState(mesa.visualization.TextElement):
         # if the game has a winner, announce it
         if model.game.players_in_game()[0]:
             return to_html(str(
-                "Game is over, " + model.game.state.players[0].get_name() + "won the game!"
-            ))
+                "Game is over, " + model.game.players_in_game()[1][0].get_name() + " won the game!"  #todo error prone!
+            ) + f"\n Final state: \n\n {model.game.print_interface()}")
 
         # render the current game state
         return to_html(model.game.print_interface())

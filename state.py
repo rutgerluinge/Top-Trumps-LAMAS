@@ -3,11 +3,13 @@ import cards
 
 PlayerList = list[agents.AbstractAgent]
 
+
 # Representation of the game state. Entire true state can be modeled by this class and evaluated/observed in a few different ways
 # Indirectly tracks where cards are through the fact that players track the cards in their pile
 class GameState:
     players: PlayerList = []
     deck: cards.Deck = []
+
     # Initialize the game state. Players and deck may be known but cards are not dealt
     def __init__(self, players: PlayerList = [], deck: cards.Deck = []):
         self.players = players
@@ -40,9 +42,3 @@ class GameState:
             if (player != self.players[-1]):
                 string += "\n"
         return string
-
-
-
-
-
-    

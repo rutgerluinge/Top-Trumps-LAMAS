@@ -18,8 +18,10 @@ class Card:
 
         return state
 
+
 # Type alias
 Deck = list[Card]
+
 
 def random_stats(total_stats: int, stat_points: int):
     """method to randomly create stats (evenly)"""
@@ -56,5 +58,3 @@ def init_cards(player_count=2, cards_per_player=2, stats_per_card=2, stat_points
 
     np.random.shuffle(card_list)
     return card_list
-
-
