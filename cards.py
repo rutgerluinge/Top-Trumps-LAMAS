@@ -19,6 +19,53 @@ class Card:
         return state
 
 
+class EmptyCard:
+    """TODO maybe not a good name as it is more like a memory buffer"""
+    stat_names = CardConfig.stat_names
+
+    def __init__(self, name, stat_count=GameConfig.stats_count):
+        self.name = name
+        self.stat_count = stat_count
+        self.stats = [None for _ in range(self.stat_count)]
+
+    def update_card_stat(self, idx: int, value: int):
+        if idx > (self.stat_count - 1):
+            raise "update card method has wrong input idx"
+        self.stats[idx] = value
+
+    def update_card_whole(self, card: Card):
+        self.name = card.name
+        self.stats = card.stats
+
+
+def concatenate_cards(old_card:EmptyCard, new_card:EmptyCard):
+    if old_card is None:
+        return new_card
+    # print(f"new card stats:  {new_card.stats}, old card stats: {old_card.stats}", end='')
+
+    if old_card.name != new_card.name:
+        raise "error not equal card names"
+
+    concat_card = EmptyCard(new_card.name)
+    for idx in range(GameConfig.stats_count):
+        if isinstance(old_card.stats[idx], np.int32):
+            concat_card.update_card_stat(idx, old_card.stats[idx])
+        elif isinstance(new_card.stats[idx], np.int32):
+            concat_card.update_card_stat(idx, new_card.stats[idx])
+
+    # print(f"concat card stats: {concat_card.stats}")
+    return concat_card
+
+
+
+
+
+def copy_card(card: Card) -> EmptyCard:
+    copy = EmptyCard(name=card.name, stat_count=len(card.stats))
+    copy.update_card_whole(card=card)
+    return copy
+
+
 # Type alias
 Deck = list[Card]
 

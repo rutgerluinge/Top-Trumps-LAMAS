@@ -1,7 +1,8 @@
 import agents
 import cards
+from cfg import GameConfig
 
-PlayerList = list[agents.AbstractAgent]
+PlayerList = list[agents.Player]
 
 
 # Representation of the game state. Entire true state can be modeled by this class and evaluated/observed in a few different ways
@@ -42,3 +43,5 @@ class GameState:
             if (player != self.players[-1]):
                 string += "\n"
         return string
+
+
