@@ -1,13 +1,31 @@
-from typing import List
+from typing import List, Tuple, Dict
 
 import numpy as np
 import random
 
 from state import GameState
+from strategies import RandomStrategy, HighStatStrategy, KnowledgeStrategy
 from utils import loadCards
 from cfg import GameConfig, CardConfig
-from cards import Card, init_cards
-from agents import Player, AbstractAgent
+from cards import Card, init_cards, copy_card, EmptyCard
+from agents import Player
+
+
+def winner_knowledge(cards: Dict[int, Card]):
+    knowledge = dict()
+    for key, card in cards.items():
+        knowledge[key] = copy_card(card)
+    return knowledge
+
+
+def loser_knowledge(cards: Dict[int, Card], stat_idx: int):
+    knowledge = dict()
+    for key, real_card in cards.items():
+        card = EmptyCard(name=real_card.name)
+        card.update_card_stat(stat_idx, real_card.stats[stat_idx])
+
+        knowledge[key] = card
+    return knowledge
 
 
 # Main class to track the game
@@ -17,7 +35,7 @@ class Game:
         self.config = GameConfig()
         self.eliminated_players = dict()
         self.round = 1
-        self.next_round_starter = "Player 0"    #gets to start first #just for logging this line
+        self.next_round_starter = "Player 0"  # gets to start first #just for logging this line
         self.last_winner = None
         self.last_chosen_stat = -1
 
@@ -35,15 +53,28 @@ class Game:
         # Initialize players with cards from the cardList.
         for idx in range(self.config.player_count):
             name = f"Player {idx}"
-            player = Player(name=name,
-                       card_list=card_list[idx * config.cards_pp: (idx + 1) * config.cards_pp],
-                       config=GameConfig())
+
+            # create "smart" player
+            if idx == 0:
+                player = Player(name=name,
+                                idx=idx,
+                                card_list=card_list[idx * config.cards_pp: (idx + 1) * config.cards_pp],
+                                config=GameConfig(),
+                                strategy=KnowledgeStrategy())
+            # create other players TODO can also do if else, if we want multiple smart agents/testing:
+            else:
+                player = Player(name=name,
+                                idx=idx,
+                                card_list=card_list[idx * config.cards_pp: (idx + 1) * config.cards_pp],
+                                config=GameConfig(),
+                                strategy=RandomStrategy())
+
             self.state.players.append(player)
 
     def gameLoop(self):
         while True:
-            playedCards, winner = self.playRound()
-            if self.updateGameState(playedCards, winner):
+            playedCards, winner, stat_idx = self.playRound()
+            if self.updateGameState(playedCards, winner, stat_idx):
                 break
 
     def start_player(self, start_player_idx=0):
@@ -55,10 +86,10 @@ class Game:
 
     def playRound(self):
         # The next player takes a turn.
-        start_player: AbstractAgent = self.start_player()
+        start_player: Player = self.start_player()
 
         stat_idx = start_player.start_turn()
-        self.last_chosen_stat = stat_idx #for mesa for now
+        self.last_chosen_stat = stat_idx  # for mesa for now
 
         round_result = {}
         for player in self.state.players:
@@ -66,11 +97,13 @@ class Game:
                 continue
             round_result[player.get_name()] = player.match_stat(stat_idx=stat_idx)
 
-        round_result = dict(sorted(round_result.items(), key=lambda x: x[1], reverse=True))  # todo change this for ties!
+        round_result = dict(
+            sorted(round_result.items(), key=lambda x: x[1], reverse=True))  # todo change this for ties!
         winner_name = next(iter(round_result))
         self.next_round_starter = winner_name
-        card_pool = []
-        winner: AbstractAgent
+
+        card_pool = dict()
+        winner: Player
 
         """Get all cards, and 'remember' winner"""
         for player in self.state.players:
@@ -78,13 +111,31 @@ class Game:
                 winner = player
             if player.get_name() in self.eliminated_players:
                 continue
-            card_pool.append(player.hand_card())
+            card_pool[player.idx] = player.hand_card()
 
-        return card_pool, winner
+        return card_pool, winner, stat_idx
 
-    def updateGameState(self, card_pool: List[Card], winner: AbstractAgent):
+    def updateGameState(self, card_pool: Dict[int, Card], winner: Player, stat_idx: int):
         # Add all won cards to the list of the winner.
-        winner.give_cards(cards=card_pool)  #updates and shuffles
+        winner.give_cards(cards=list(card_pool.values()))  # updates and shuffles
+
+        #update players individual beliefs
+        if self.config.full_announcement:
+            # all players know all whole cards
+            for player in self.state.players:
+                knowledge = winner_knowledge(card_pool)
+                player.update_beliefs(cards=knowledge, winner_idx=winner.idx)
+        else: 
+            # only winner knows all whole cards, losers know relevant stat
+            for player in self.state.players:
+                if player == winner:
+                    knowledge = winner_knowledge(card_pool) #winner knows whole cards
+                else:
+                    knowledge = loser_knowledge(card_pool, stat_idx=stat_idx)       #losers only know relevant stat + name is now to in winner his hands
+
+                player.update_beliefs(cards=knowledge, winner_idx=winner.idx)
+
+
 
         if self.config.debug:
             self.print()
@@ -103,7 +154,7 @@ class Game:
 
         return False
 
-    def players_in_game(self) -> tuple[bool, List[Player]]:
+    def players_in_game(self) -> tuple[bool, list[Player]]:
         """:returns players that are still playing (and only 1 if there is a winner) + boolean if winner is found"""
         still_playing = []
         for player in self.state.players:

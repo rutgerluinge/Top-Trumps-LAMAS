@@ -37,8 +37,8 @@ class TopTrumpsModel(mesa.Model):
 
     # plays a single round of top trumps and updates the state
     def step(self):
-        playedCards, winner = self.game.playRound()
-        self.game.updateGameState(playedCards, winner)
+        playedCards, winner, stat_idx = self.game.playRound()
+        self.game.updateGameState(playedCards, winner, stat_idx)
         self.datacollector.collect(self)
         # automatically end a simulation if there is a winner
         if (self.game.players_in_game()[0]):

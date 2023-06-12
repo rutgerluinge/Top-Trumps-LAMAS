@@ -1,7 +1,8 @@
 import agents
 import cards
+from cfg import GameConfig
 
-PlayerList = list[agents.AbstractAgent]
+PlayerList = list[agents.Player]
 
 
 # Representation of the game state. Entire true state can be modeled by this class and evaluated/observed in a few different ways
@@ -17,7 +18,7 @@ class GameState:
 
     # Returns the game state as a dictionary of cards and players
     # Can be used to iterate the deck and find which player it belongs to
-    def as_dictionary(self) -> dict():
+    def as_dictionary(self) -> dict:
         stateDictionary = dict()
         for player in self.players:
             for card in player.get_deck():
@@ -42,3 +43,5 @@ class GameState:
             if (player != self.players[-1]):
                 string += "\n"
         return string
+
+
