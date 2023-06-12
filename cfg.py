@@ -8,6 +8,7 @@ from typing import List
 PLAYER_COUNT = 3
 STATS_COUNT = 3  # Equal to or lower than the amount of stats specified in cards.json
 CARD_PER_PLAYER = 3  # Will be overwritten if there are less cards declared in cards.json   //changed this to cards per player less error prone
+FULL_ANNOUNCEMENT = True
 
 # Behind the screens parameters
 RANDOM_SEED = 3
@@ -31,3 +32,4 @@ class GameConfig:
     debug: bool = DEBUG
     card_count: int = CARD_PER_PLAYER * PLAYER_COUNT
     stat_points: int = STAT_POINTS
+    full_announcement: bool = FULL_ANNOUNCEMENT

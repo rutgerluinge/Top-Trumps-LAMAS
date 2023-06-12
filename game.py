@@ -120,13 +120,20 @@ class Game:
         winner.give_cards(cards=list(card_pool.values()))  # updates and shuffles
 
         #update players individual beliefs
-        for player in self.state.players:
-            if player == winner:
-                knowledge = winner_knowledge(card_pool) #winner knows whole cards
-            else:
-                knowledge = loser_knowledge(card_pool, stat_idx=stat_idx)       #losers only know relevant stat + name is now to in winner his hands
+        if self.config.full_announcement:
+            # all players know all whole cards
+            for player in self.state.players:
+                knowledge = winner_knowledge(card_pool)
+                player.update_beliefs(cards=knowledge, winner_idx=winner.idx)
+        else: 
+            # only winner knows all whole cards, losers know relevant stat
+            for player in self.state.players:
+                if player == winner:
+                    knowledge = winner_knowledge(card_pool) #winner knows whole cards
+                else:
+                    knowledge = loser_knowledge(card_pool, stat_idx=stat_idx)       #losers only know relevant stat + name is now to in winner his hands
 
-            player.update_beliefs(cards=knowledge, winner_idx=winner.idx)
+                player.update_beliefs(cards=knowledge, winner_idx=winner.idx)
 
 
 
