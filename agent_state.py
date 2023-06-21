@@ -22,12 +22,12 @@ class AgentKnowledge:
         """dictionary is necessary as we have to make sure the player and card are matched"""
 
         for idx_player, card in cards.items():
-
             self.player_cards[idx_player] -= 1  # correct card count
             self.player_cards[winner_idx] += 1  # correct card count
 
-            old_known_card = self.remove_card_by_name(card.name,
-                                                      idx_player)  # remove cards of losing players: belief of player
+            old_known_card = self.remove_card_by_name(
+                card.name, idx_player
+            )  # remove cards of losing players: belief of player
 
             self.match_cards(winner_idx, old_known_card, card)
 
@@ -66,7 +66,9 @@ class AgentKnowledge:
                 return True
         return False
 
-    def find_card_by_name(self, name, object_list: List[Card]) -> Tuple[bool, EmptyCard]:
+    def find_card_by_name(
+        self, name, object_list: List[Card]
+    ) -> Tuple[bool, EmptyCard]:
         """:returns bool: known card? and the new knowledge card"""
         for card in object_list:
             if card.name == name:

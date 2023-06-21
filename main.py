@@ -10,7 +10,7 @@ def main():
     topTrump = Game()
 
     # Start the game with default configuration
-    topTrump.startGame(cfg.GameConfig())
+    topTrump.start_game(cfg.GameConfig())
 
 
 if __name__ == "__main__":

@@ -21,6 +21,7 @@ class Card:
 
 class EmptyCard:
     """TODO maybe not a good name as it is more like a memory buffer"""
+
     stat_names = CardConfig.stat_names
 
     def __init__(self, name, stat_count=GameConfig.stats_count):
@@ -38,10 +39,9 @@ class EmptyCard:
         self.stats = card.stats
 
 
-def concatenate_cards(old_card:EmptyCard, new_card:EmptyCard):
+def concatenate_cards(old_card: EmptyCard, new_card: EmptyCard):
     if old_card is None:
         return new_card
-    # print(f"new card stats:  {new_card.stats}, old card stats: {old_card.stats}", end='')
 
     if old_card.name != new_card.name:
         raise "error not equal card names"
@@ -53,11 +53,7 @@ def concatenate_cards(old_card:EmptyCard, new_card:EmptyCard):
         elif isinstance(new_card.stats[idx], np.int32):
             concat_card.update_card_stat(idx, new_card.stats[idx])
 
-    # print(f"concat card stats: {concat_card.stats}")
     return concat_card
-
-
-
 
 
 def copy_card(card: Card) -> EmptyCard:
@@ -91,7 +87,9 @@ def random_stats(total_stats: int, stat_points: int):
     return stats
 
 
-def init_cards(player_count=2, cards_per_player=2, stats_per_card=2, stat_points=100) -> List[Card]:
+def init_cards(
+    player_count=2, cards_per_player=2, stats_per_card=2, stat_points=100
+) -> List[Card]:
     """Method to init cards randomly (but with seed so not random), and shuffle them"""
     np.random.seed(GameConfig.seed)
     total_cards = player_count * cards_per_player
@@ -100,7 +98,9 @@ def init_cards(player_count=2, cards_per_player=2, stats_per_card=2, stat_points
     card_names = CardConfig.card_names  # TODO increase name pool?
 
     for idx in range(total_cards):
-        generated_stats = random_stats(total_stats=stats_per_card, stat_points=stat_points)
+        generated_stats = random_stats(
+            total_stats=stats_per_card, stat_points=stat_points
+        )
         card_list.append(Card(name=card_names[idx], stats=generated_stats))
 
     np.random.shuffle(card_list)

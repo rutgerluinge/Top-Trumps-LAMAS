@@ -7,15 +7,34 @@ from typing import List
 
 PLAYER_COUNT = 3
 STATS_COUNT = 3  # Equal to or lower than the amount of stats specified in cards.json
-CARD_PER_PLAYER = 3  # Will be overwritten if there are less cards declared in cards.json   //changed this to cards per player less error prone
+CARD_PER_PLAYER = 3  # Changed this to cards per player less error prone
 FULL_ANNOUNCEMENT = True
 
 # Behind the screens parameters
 RANDOM_SEED = 3
 DEBUG = False
-HARDCODED_CARD_NAMES = ["Chandler", "Monica", "Ross", "Phoebe", "Rachel", "Joey", "Janice", "Gunther", "Mr. Heckles", "Ursula", "Julie"]
-HARDCODED_STAT_NAMES = ["Intelligence", "Charisma", "Looks", "Strength", "Game has not started a round!"]
+HARDCODED_CARD_NAMES = [
+    "Chandler",
+    "Monica",
+    "Ross",
+    "Phoebe",
+    "Rachel",
+    "Joey",
+    "Janice",
+    "Gunther",
+    "Mr. Heckles",
+    "Ursula",
+    "Julie",
+]
+HARDCODED_STAT_NAMES = [
+    "Intelligence",
+    "Charisma",
+    "Looks",
+    "Strength",
+    "Game has not started a round!",
+]
 STAT_POINTS = 100
+
 
 @dataclass
 class CardConfig:

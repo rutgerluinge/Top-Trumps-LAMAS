@@ -10,45 +10,15 @@ from cfg import GameConfig
 from strategies import Strategy
 
 
-# class AbstractAgent(ABC):
-#     """abstract class, can probably be removed"""
-#
-#     def get_top_card(self):
-#         pass
-#
-#     @abstractmethod
-#     def match_stat(self, stat_idx: int) -> int:
-#         pass
-#
-#     @abstractmethod
-#     def start_turn(self):
-#         pass
-#
-#     @abstractmethod
-#     def has_cards(self) -> bool:
-#         pass
-#
-#     @abstractmethod
-#     def get_name(self) -> str:
-#         pass
-#
-#     @abstractmethod
-#     def get_deck(self) -> Deck:
-#         pass
-#
-#     def hand_card(self):
-#         pass
-#
-#     def give_cards(self, cards: Deck):
-#         pass
-#
-#
-#     def __str__(self) -> str:
-#         pass
-
-
 class Player:
-    def __init__(self, name: str, idx: int, card_list: Deck, config: GameConfig, strategy: Strategy):
+    def __init__(
+        self,
+        name: str,
+        idx: int,
+        card_list: Deck,
+        config: GameConfig,
+        strategy: Strategy,
+    ):
         self.name = name
         self.idx = idx
         self.cardList = card_list
@@ -73,7 +43,9 @@ class Player:
     def start_turn(self) -> int:
         """:returns stat idx TODO now it is random change later with strategy"""
 
-        return self.strategy.choose_action(top_card=self.get_top_card(), state=self.agent_knowledge)
+        return self.strategy.choose_action(
+            top_card=self.get_top_card(), state=self.agent_knowledge
+        )
 
     def give_cards(self, cards: List[Card]):
         """:param won cards, method adds cards and shuffles them"""
@@ -81,16 +53,14 @@ class Player:
             self.cardList.append(card)
         np.random.shuffle(self.cardList)
 
-    def update_beliefs(self, cards: Dict[int, EmptyCard], winner_idx:int):
+    def update_beliefs(self, cards: Dict[int, EmptyCard], winner_idx: int):
         self.agent_knowledge.update_cards(cards, winner_idx=winner_idx)
-        if self.idx == 0:   #just for debugging
-
+        if self.idx == 0:
+            # just for debugging
             self.agent_knowledge.debug()
-
 
     def update_beliefs_dumb(self):
         raise NotImplementedError
-
 
     # Debug print function for players
     def __str__(self) -> str:
@@ -112,4 +82,3 @@ class Player:
 
     def get_deck(self) -> Deck:
         return self.cardList
-

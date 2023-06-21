@@ -35,17 +35,21 @@ class Game:
         self.config = GameConfig()
         self.eliminated_players = dict()
         self.round = 1
-        self.next_round_starter = "Player 0"  # gets to start first #just for logging this line
+        self.next_round_starter = (
+            "Player 0"  # gets to start first #just for logging this line
+        )
         self.last_winner = None
         self.last_chosen_stat = -1
 
     # Initialize and start the game
-    def startGame(self, config: GameConfig):
-        self.initializeGame(config)
-        self.gameLoop()
+    def start_game(self, config: GameConfig):
+        self.initialize_game(config)
+        self.game_loop()
 
-    def initializeGame(self, config: GameConfig):
-        card_list = init_cards(config.player_count, config.cards_pp, config.stats_count, config.stat_points)
+    def initialize_game(self, config: GameConfig):
+        card_list = init_cards(
+            config.player_count, config.cards_pp, config.stats_count, config.stat_points
+        )
         self.state.deck = card_list
         self.state.players = []
         self.config = config
@@ -56,35 +60,43 @@ class Game:
 
             # create "smart" player
             if idx == 0:
-                player = Player(name=name,
-                                idx=idx,
-                                card_list=card_list[idx * config.cards_pp: (idx + 1) * config.cards_pp],
-                                config=GameConfig(),
-                                strategy=KnowledgeStrategy())
+                player = Player(
+                    name=name,
+                    idx=idx,
+                    card_list=card_list[
+                        idx * config.cards_pp : (idx + 1) * config.cards_pp
+                    ],
+                    config=GameConfig(),
+                    strategy=KnowledgeStrategy(),
+                )
             # create other players TODO can also do if else, if we want multiple smart agents/testing:
             else:
-                player = Player(name=name,
-                                idx=idx,
-                                card_list=card_list[idx * config.cards_pp: (idx + 1) * config.cards_pp],
-                                config=GameConfig(),
-                                strategy=RandomStrategy())
+                player = Player(
+                    name=name,
+                    idx=idx,
+                    card_list=card_list[
+                        idx * config.cards_pp : (idx + 1) * config.cards_pp
+                    ],
+                    config=GameConfig(),
+                    strategy=RandomStrategy(),
+                )
 
             self.state.players.append(player)
 
-    def gameLoop(self):
+    def game_loop(self):
         while True:
-            playedCards, winner, stat_idx = self.playRound()
-            if self.updateGameState(playedCards, winner, stat_idx):
+            playedCards, winner, stat_idx = self.play_round()
+            if self.update_game_state(playedCards, winner, stat_idx):
                 break
 
     def start_player(self, start_player_idx=0):
         """method which return player idx which should start next round, if no winner yet (first round) player 0
-        starts """
+        starts"""
         if self.last_winner is None:
             return self.state.players[start_player_idx]
         return self.last_winner
 
-    def playRound(self):
+    def play_round(self):
         # The next player takes a turn.
         start_player: Player = self.start_player()
 
@@ -98,7 +110,8 @@ class Game:
             round_result[player.get_name()] = player.match_stat(stat_idx=stat_idx)
 
         round_result = dict(
-            sorted(round_result.items(), key=lambda x: x[1], reverse=True))  # todo change this for ties!
+            sorted(round_result.items(), key=lambda x: x[1], reverse=True)
+        )  # todo change this for ties!
         winner_name = next(iter(round_result))
         self.next_round_starter = winner_name
 
@@ -115,27 +128,29 @@ class Game:
 
         return card_pool, winner, stat_idx
 
-    def updateGameState(self, card_pool: Dict[int, Card], winner: Player, stat_idx: int):
+    def update_game_state(
+        self, card_pool: Dict[int, Card], winner: Player, stat_idx: int
+    ):
         # Add all won cards to the list of the winner.
         winner.give_cards(cards=list(card_pool.values()))  # updates and shuffles
 
-        #update players individual beliefs
+        # update players individual beliefs
         if self.config.full_announcement:
             # all players know all whole cards
             for player in self.state.players:
                 knowledge = winner_knowledge(card_pool)
                 player.update_beliefs(cards=knowledge, winner_idx=winner.idx)
-        else: 
+        else:
             # only winner knows all whole cards, losers know relevant stat
             for player in self.state.players:
                 if player == winner:
-                    knowledge = winner_knowledge(card_pool) #winner knows whole cards
+                    knowledge = winner_knowledge(card_pool)  # winner knows whole cards
                 else:
-                    knowledge = loser_knowledge(card_pool, stat_idx=stat_idx)       #losers only know relevant stat + name is now to in winner his hands
+                    knowledge = loser_knowledge(
+                        card_pool, stat_idx=stat_idx
+                    )  # losers only know relevant stat + name is now to in winner his hands
 
                 player.update_beliefs(cards=knowledge, winner_idx=winner.idx)
-
-
 
         if self.config.debug:
             self.print()
@@ -167,6 +182,9 @@ class Game:
             return True, still_playing
 
         return False, still_playing
+
+    def has_winner(self) -> bool:
+        return self.players_in_game()[0]
 
     # Debug function to print the game status.
     def print(self):

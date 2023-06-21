@@ -32,22 +32,22 @@ class TopTrumpsModel(mesa.Model):
     # initialize a game with configuration
     def from_config(self, config: cfg.GameConfig):
         self.game = game.Game()
-        self.game.initializeGame(config)
+        self.game.initialize_game(config)
         return self
 
     # plays a single round of top trumps and updates the state
     def step(self):
-        playedCards, winner, stat_idx = self.game.playRound()
-        self.game.updateGameState(playedCards, winner, stat_idx)
+        playedCards, winner, stat_idx = self.game.play_round()
+        self.game.update_game_state(playedCards, winner, stat_idx)
         self.datacollector.collect(self)
         # automatically end a simulation if there is a winner
-        if (self.game.players_in_game()[0]):
+        if self.game.has_winner():
             self.running = False
 
 
 # steps the model until there is a winner
 def run_to_completion(model: TopTrumpsModel):
-    while not model.game.players_in_game()[0]:
+    while not model.game.has_winner():
         model.step()
 
 
@@ -64,10 +64,15 @@ class RenderState(mesa.visualization.TextElement):
     # renders the state of the game as text
     def render(self, model: TopTrumpsModel):
         # if the game has a winner, announce it
-        if model.game.players_in_game()[0]:
-            return to_html(str(
-                "Game is over, " + model.game.players_in_game()[1][0].get_name() + " won the game!"  #todo error prone!
-            ) + f"\n Final state: \n\n {model.game.print_interface()}")
+        if model.game.has_winner():
+            return to_html(
+                str(
+                    "Game is over, "
+                    + model.game.players_in_game()[1][0].get_name()
+                    + " won the game!"  # todo error prone!
+                )
+                + f"\n Final state: \n\n {model.game.print_interface()}"
+            )
 
         # render the current game state
         return to_html(model.game.print_interface())
