@@ -78,6 +78,17 @@ class RenderState(mesa.visualization.TextElement):
         return to_html(model.game.print_interface())
 
 
+class RenderKnowledge(mesa.visualization.TextElement):
+    def __init__(self):
+        super().__init__()
+
+    def render(self, model: TopTrumpsModel):
+        knowledge = str()
+        for agent in model.game.state.players:
+            knowledge += "\n" + str(agent.agent_knowledge)
+        return to_html(knowledge)
+
+
 # main function to play a game as a mesa server
 def main():
     random.seed(cfg.RANDOM_SEED)
@@ -90,7 +101,9 @@ def main():
 
     # run as a server with rudimentary visualization
     server = mesa.visualization.ModularServer(
-        TopTrumpsModel, [RenderState()], "Top Trumps: Friends Edition"
+        TopTrumpsModel,
+        [RenderState(), RenderKnowledge()],
+        "Top Trumps: Friends Edition",
     )
     server.launch()
 

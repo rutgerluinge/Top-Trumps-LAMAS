@@ -47,10 +47,23 @@ class AgentKnowledge:
                 print(f"\t  name: {card.name}, stats: {card.stats}")
             print()
 
-    def __str__(self):
-        print(f"player {self.player_idx} has belief:")
-        for idx, key in enumerate(self.belief.keys()):
-            print(f"    {idx} = {self.belief[key]}")
+    def __str__(self) -> str:
+        knowledge = str()
+        knowledge += f"player {self.player_idx} believes:\n"
+        for player_idx, cards in self.belief.items():
+            knowledge += (
+                f" player {player_idx} has {self.player_cards[player_idx]} cards\n"
+            )
+            knowledge += (
+                f"none are known\n"
+                if len(cards) == 0
+                else "has at least the following cards\n"
+            )
+
+            for card in cards:
+                knowledge += f"\t  {card}\n"
+        knowledge.removesuffix("\n")
+        return knowledge
 
     def remove_card_by_name(self, name: str, player_idx: int):
         """check if you can do this! with if known_by_player"""

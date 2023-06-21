@@ -38,6 +38,14 @@ class EmptyCard:
         self.name = card.name
         self.stats = card.stats
 
+    def __str__(self) -> str:
+        state = "  Card: " + self.name
+        for i, stat in enumerate(self.stats):
+            value = "unknown" if stat == None else str(stat)
+            state += f" {CardConfig.stat_names[i]} = {value},"
+
+        return state
+
 
 def concatenate_cards(old_card: EmptyCard, new_card: EmptyCard):
     if old_card is None:
