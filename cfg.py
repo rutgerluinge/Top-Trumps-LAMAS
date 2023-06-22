@@ -19,8 +19,7 @@ PLAYER_COUNT = 3
 STATS_COUNT = 3  # Equal to or lower than the amount of stats specified in cards.json
 CARD_PER_PLAYER = 3  # Changed this to cards per player less error prone
 FULL_ANNOUNCEMENT = True
-# GAME_MODE = GameMode.EPISTEMIC_ROUND_LIMIT
-GAME_MODE = GameMode.EPISTEMIC_ROUND_LIMIT
+GAME_MODE = GameMode.STANDARD
 # maximum score or round number in epistemic game modes
 MAX_ROUND_OR_SCORE = 10
 

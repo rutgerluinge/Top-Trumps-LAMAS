@@ -40,6 +40,7 @@ class Game:
         )
         self.last_winner = None
         self.last_chosen_stat = -1
+        self.scores = dict()
 
     # Initialize and start the game
     def start_game(self, config: GameConfig):
@@ -82,6 +83,7 @@ class Game:
                 )
 
             self.state.players.append(player)
+            self.scores[player] = 0
 
     def game_loop(self):
         while not self.has_ended():
@@ -160,6 +162,8 @@ class Game:
                 print(f"player: {key}, got eliminated in round {value}")
 
         players = self.players_in_game()
+        # update the score
+        self.scores[winner] += 1
         # check if we have a winner
         if self.has_winner():
             print("Game is over, ", players[0].get_name(), " won the game!")
@@ -204,6 +208,9 @@ class Game:
         # a standard game has a winner if there is only one player left
         if self.config.game_mode == GameMode.STANDARD:
             return len(self.players_in_game()) == 1
+        elif self.is_at_round_or_point_limit():
+            return self.single_high_scorer()
+
         return False
 
     def game_winner(self) -> Player:
@@ -212,15 +219,39 @@ class Game:
             return None
         if self.config.game_mode == GameMode.STANDARD:
             return self.players_in_game()[0]
-        else:
-            return None
+        elif (
+            self.config.game_mode == GameMode.EPISTEMIC_ROUND_LIMIT
+            or self.config.game_mode == GameMode.EPISTEMIC_POINT_LIMIT
+        ):
+            return self.single_high_scorer()
+        return None
+
+    def is_at_round_or_point_limit(self) -> bool:
+        """Returns true if the game has ended by reaching the maximum number of rounds or points"""
+        if self.config.game_mode == GameMode.EPISTEMIC_ROUND_LIMIT:
+            return self.round >= self.config.max_round_or_score
+        elif self.config.game_mode == GameMode.EPISTEMIC_POINT_LIMIT:
+            high_scorer = self.single_high_scorer()
+            return (
+                high_scorer != None
+                and self.scores[high_scorer] >= self.config.max_round_or_score
+            )
+
+        return False
 
     def has_ended(self) -> bool:
         if self.has_winner():
             return True
 
         if self.config.game_mode == GameMode.EPISTEMIC_ROUND_LIMIT:
-            return self.round >= self.config.max_round_or_score
+            return self.is_at_round_or_point_limit()
+
+    def single_high_scorer(self) -> Player:
+        """returns the player with the single highest score, if any"""
+        high_score = max(self.scores.values())
+        if list(self.scores.values()).count(high_score) == 1:
+            return sorted(self.scores.items(), key=lambda x: x[1], reverse=True)[0][0]
+        return None
 
     # Debug function to print the game status.
     def print(self):
