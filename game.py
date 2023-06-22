@@ -84,7 +84,7 @@ class Game:
             self.state.players.append(player)
 
     def game_loop(self):
-        while True:
+        while not self.has_ended():
             playedCards, winner, stat_idx = self.play_round()
             if self.update_game_state(playedCards, winner, stat_idx):
                 break
@@ -130,7 +130,7 @@ class Game:
             if player.get_name() in self.eliminated_players:
                 continue
             # in the epistemic game mode, all cards remain with the players
-            if self.config.game_mode != GameMode.EPISTEMIC:
+            if self.config.game_mode == GameMode.STANDARD:
                 card_pool[player.idx] = player.hand_card()
             else:
                 card_pool[player.idx] = player.get_top_card()
@@ -139,16 +139,38 @@ class Game:
 
     def update_game_state(
         self, card_pool: Dict[int, Card], winner: Player, stat_idx: int
-    ):
+    ) -> bool:
+        """Updates the game state. Returns true if there is a winner, false otherwise"""
         # Add all won cards to the list of the winner.
-        if self.config.game_mode != GameMode.EPISTEMIC:
+        if self.config.game_mode == GameMode.STANDARD:
             # updates and shuffles the cards for the winner
             winner.give_cards(cards=list(card_pool.values()))
         else:
             # all cards should be shuffled but none are transferred
-            for player in self.players_in_game()[1]:
+            for player in self.players_in_game():
                 player.shuffle_cards()
 
+        self.update_player_beliefs(card_pool, winner, stat_idx)
+
+        if self.config.debug:
+            self.print()
+
+        for key, value in self.eliminated_players.items():
+            if value == self.round:
+                print(f"player: {key}, got eliminated in round {value}")
+
+        players = self.players_in_game()
+        # check if we have a winner
+        if self.has_winner():
+            print("Game is over, ", players[0].get_name(), " won the game!")
+            return True
+        self.round += 1
+
+        return False
+
+    def update_player_beliefs(
+        self, card_pool: Dict[int, Card], winner: Player, stat_idx: int
+    ):
         # update players individual beliefs
         if self.config.full_announcement:
             # all players know all whole cards
@@ -167,25 +189,8 @@ class Game:
 
                 player.update_beliefs(cards=knowledge, winner_idx=winner.idx)
 
-        if self.config.debug:
-            self.print()
-
-        winner, players = self.players_in_game()
-
-        for key, value in self.eliminated_players.items():
-            if value == self.round:
-                print(f"player: {key}, got eliminated in round {value}")
-
-        # check if we have a winner
-        if winner:
-            print("Game is over, ", players[0].get_name(), " won the game!")
-            return True
-        self.round += 1
-
-        return False
-
-    def players_in_game(self) -> tuple[bool, list[Player]]:
-        """:returns players that are still playing (and only 1 if there is a winner) + boolean if winner is found"""
+    def players_in_game(self) -> list[Player]:
+        """:returns players that are still playing (and only 1 if there is a winner)"""
         still_playing = []
         for player in self.state.players:
             if player.has_cards():
@@ -193,13 +198,29 @@ class Game:
             elif player.get_name() not in self.eliminated_players.keys():
                 self.eliminated_players[player.get_name()] = self.round
 
-        if len(still_playing) == 1:  # winner known:
-            return True, still_playing
-
-        return False, still_playing
+        return still_playing
 
     def has_winner(self) -> bool:
-        return self.players_in_game()[0]
+        # a standard game has a winner if there is only one player left
+        if self.config.game_mode == GameMode.STANDARD:
+            return len(self.players_in_game()) == 1
+        return False
+
+    def game_winner(self) -> Player:
+        """Returns the game winner, if there is one"""
+        if not self.has_winner():
+            return None
+        if self.config.game_mode == GameMode.STANDARD:
+            return self.players_in_game()[0]
+        else:
+            return None
+
+    def has_ended(self) -> bool:
+        if self.has_winner():
+            return True
+
+        if self.config.game_mode == GameMode.EPISTEMIC_ROUND_LIMIT:
+            return self.round >= self.config.max_round_or_score
 
     # Debug function to print the game status.
     def print(self):
@@ -217,5 +238,5 @@ class Game:
         return state
 
     def __str__(self) -> str:
-        state = "Game: \n" + str(self.state)
+        state = f"Game: Round {self.round}\n" + str(self.state)
         return state

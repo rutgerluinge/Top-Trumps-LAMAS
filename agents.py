@@ -59,9 +59,9 @@ class Player:
         np.random.shuffle(self.cardList)
 
     def update_beliefs(self, cards: Dict[int, EmptyCard], winner_idx: int):
-        self.agent_knowledge.update_cards(cards, winner_idx=winner_idx)
-        if self.idx == 0:
-            # just for debugging
+        self.agent_knowledge.update_belief(cards, winner_idx=winner_idx)
+
+        if self.idx == 0 and self.config.debug:
             self.agent_knowledge.debug()
 
     def update_beliefs_dumb(self):
@@ -71,7 +71,7 @@ class Player:
     def __str__(self) -> str:
         state = self.name
         for card in self.cardList:
-            state += "\t\n" + str(card)
+            state += "\n\t" + str(card)
         return state
 
     def has_cards(self) -> bool:

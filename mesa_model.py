@@ -41,13 +41,13 @@ class TopTrumpsModel(mesa.Model):
         self.game.update_game_state(playedCards, winner, stat_idx)
         self.datacollector.collect(self)
         # automatically end a simulation if there is a winner
-        if self.game.has_winner():
+        if self.game.has_ended():
             self.running = False
 
 
 # steps the model until there is a winner
 def run_to_completion(model: TopTrumpsModel):
-    while not model.game.has_winner():
+    while not model.game.has_ended():
         model.step()
 
 
@@ -72,6 +72,13 @@ class RenderState(mesa.visualization.TextElement):
                     + " won the game!"  # todo error prone!
                 )
                 + f"\n Final state: \n\n {model.game.print_interface()}"
+            )
+        elif model.game.has_ended():
+            return to_html(
+                str(
+                    "The game has ended without a winner!"
+                    + f"\n Final state: \n\n {model.game.print_interface()}"
+                )
             )
 
         # render the current game state
