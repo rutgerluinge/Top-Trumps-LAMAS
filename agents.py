@@ -47,10 +47,15 @@ class Player:
             top_card=self.get_top_card(), state=self.agent_knowledge
         )
 
+    # adds the given ca
     def give_cards(self, cards: List[Card]):
         """:param won cards, method adds cards and shuffles them"""
         for card in cards:
             self.cardList.append(card)
+        self.shuffle_cards()
+
+    def shuffle_cards(self):
+        """shuffles this player's deck"""
         np.random.shuffle(self.cardList)
 
     def update_beliefs(self, cards: Dict[int, EmptyCard], winner_idx: int):

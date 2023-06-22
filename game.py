@@ -6,8 +6,8 @@ import random
 from state import GameState
 from strategies import RandomStrategy, HighStatStrategy, KnowledgeStrategy
 from utils import loadCards
-from cfg import GameConfig, CardConfig
-from cards import Card, init_cards, copy_card, EmptyCard
+from cfg import GameConfig, CardConfig, GameMode
+from cards import Card, init_cards, copy_card, EmptyCard, Deck
 from agents import Player
 
 
@@ -103,36 +103,51 @@ class Game:
         stat_idx = start_player.start_turn()
         self.last_chosen_stat = stat_idx  # for mesa for now
 
+        winner: Player
         round_result = {}
         for player in self.state.players:
             if player.get_name() in self.eliminated_players:
                 continue
-            round_result[player.get_name()] = player.match_stat(stat_idx=stat_idx)
+            round_result[player] = player.match_stat(stat_idx=stat_idx)
 
+        # sorted list of stat values in play
         round_result = dict(
             sorted(round_result.items(), key=lambda x: x[1], reverse=True)
         )  # todo change this for ties!
-        winner_name = next(iter(round_result))
-        self.next_round_starter = winner_name
+        winner = next(iter(round_result))
+        self.next_round_starter = winner.name
 
-        card_pool = dict()
-        winner: Player
-
-        """Get all cards, and 'remember' winner"""
-        for player in self.state.players:
-            if player.get_name() == winner_name:
-                winner = player
-            if player.get_name() in self.eliminated_players:
-                continue
-            card_pool[player.idx] = player.hand_card()
+        # collect the cards that were played in this round
+        card_pool = self.collect_cards()
 
         return card_pool, winner, stat_idx
+
+    def collect_cards(self) -> dict:
+        """collects all the cards that were played in the active round"""
+        card_pool = dict()
+        # get all cards from each player
+        for player in self.state.players:
+            if player.get_name() in self.eliminated_players:
+                continue
+            # in the epistemic game mode, all cards remain with the players
+            if self.config.game_mode != GameMode.EPISTEMIC:
+                card_pool[player.idx] = player.hand_card()
+            else:
+                card_pool[player.idx] = player.get_top_card()
+
+        return card_pool
 
     def update_game_state(
         self, card_pool: Dict[int, Card], winner: Player, stat_idx: int
     ):
         # Add all won cards to the list of the winner.
-        winner.give_cards(cards=list(card_pool.values()))  # updates and shuffles
+        if self.config.game_mode != GameMode.EPISTEMIC:
+            # updates and shuffles the cards for the winner
+            winner.give_cards(cards=list(card_pool.values()))
+        else:
+            # all cards should be shuffled but none are transferred
+            for player in self.players_in_game()[1]:
+                player.shuffle_cards()
 
         # update players individual beliefs
         if self.config.full_announcement:

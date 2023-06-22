@@ -70,7 +70,7 @@ def copy_card(card: Card) -> EmptyCard:
     return copy
 
 
-# Type alias
+# Type alias, collection of cards
 Deck = list[Card]
 
 

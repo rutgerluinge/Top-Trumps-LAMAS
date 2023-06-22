@@ -1,14 +1,22 @@
 from dataclasses import dataclass
+from enum import Enum
 
 # Set parameters here.
 
-# Global parameters. TODO: set adjustable on front end.
-from typing import List
 
+class GameMode(Enum):
+    # Standard game mode (with slightly altered rules)
+    STANDARD = 1
+    # Epistemic game mode (no card transfers)
+    EPISTEMIC = 2
+
+
+# Global parameters. TODO: set adjustable on front end.
 PLAYER_COUNT = 3
 STATS_COUNT = 3  # Equal to or lower than the amount of stats specified in cards.json
 CARD_PER_PLAYER = 3  # Changed this to cards per player less error prone
 FULL_ANNOUNCEMENT = True
+GAME_MODE = GameMode.EPISTEMIC
 
 # Behind the screens parameters
 RANDOM_SEED = 3
@@ -44,6 +52,7 @@ class CardConfig:
 
 @dataclass
 class GameConfig:
+    game_mode: GameMode = GAME_MODE
     player_count: int = PLAYER_COUNT  # n
     stats_count: int = STATS_COUNT  # m
     cards_pp: int = CARD_PER_PLAYER  # l
