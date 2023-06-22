@@ -15,6 +15,7 @@ class GameState:
     def __init__(self, players: PlayerList = [], deck: cards.Deck = []):
         self.players = players
         self.deck = deck
+        self.kripkeModel = None
 
     # Returns the game state as a dictionary of cards and players
     # Can be used to iterate the deck and find which player it belongs to

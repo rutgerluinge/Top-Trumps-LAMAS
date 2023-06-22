@@ -28,7 +28,6 @@ class AgentKnowledge:
 
             old_known_card = self.remove_card_by_name(card.name,
                                                       idx_player)  # remove cards of losing players: belief of player
-
             self.match_cards(winner_idx, old_known_card, card)
 
     def match_cards(self, winner_idx, old_card, new_card):
