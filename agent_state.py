@@ -1,7 +1,7 @@
 from typing import List, Dict, Tuple
 
 from cards import EmptyCard, Card, copy_card, concatenate_cards
-from cfg import GameConfig
+from cfg import GameConfig, GameMode
 
 
 class AgentKnowledge:
@@ -18,39 +18,55 @@ class AgentKnowledge:
             self.belief[player] = []
             self.player_cards[player] = self.config.cards_pp
 
-    def update_cards(self, cards: Dict[int, EmptyCard], winner_idx: int):
+    def update_belief(self, cards: Dict[int, EmptyCard], winner_idx: int):
         """dictionary is necessary as we have to make sure the player and card are matched"""
 
         for idx_player, card in cards.items():
+            if self.config.game_mode == GameMode.STANDARD:
+                self.player_cards[idx_player] -= 1  # correct card count
+                self.player_cards[winner_idx] += 1  # correct card count
+                # remove cards of losing players: belief of player
+                old_known_card = self.remove_card_by_name(card.name, idx_player)
+                self.add_card_knowledge_to_belief(winner_idx, old_known_card, card)
+            else:
+                # in epistemic game modes, cards are not transferred
+                # we do remove cards first in order to update them
+                old_known_card = self.remove_card_by_name(card.name, idx_player)
+                self.add_card_knowledge_to_belief(idx_player, old_known_card, card)
 
-            self.player_cards[idx_player] -= 1  # correct card count
-            self.player_cards[winner_idx] += 1  # correct card count
-
-            old_known_card = self.remove_card_by_name(card.name,
-                                                      idx_player)  # remove cards of losing players: belief of player
-
-            self.match_cards(winner_idx, old_known_card, card)
-
-    def match_cards(self, winner_idx, old_card, new_card):
-        self.belief[winner_idx].append(concatenate_cards(old_card, new_card))
-
-        # give cards to winner
+    def add_card_knowledge_to_belief(self, player_idx, old_card, new_card):
+        self.belief[player_idx].append(concatenate_cards(old_card, new_card))
 
     def debug(self):
+        print("Beliefs")
         print(f"card counts: ")
         for player, card_cnt in self.player_cards.items():
-            print(f"player {player} cards: {card_cnt}")
+            print(f"\tplayer {player} cards: {card_cnt}")
+        print()
 
         for player_idx, cards in self.belief.items():
-            print(f"player {player_idx}")
+            print(f"\tplayer {player_idx}")
             for card in cards:
-                print(f"\t  name: {card.name}, stats: {card.stats}")
+                print(f"\t\t  name: {card.name}, stats: {card.stats}")
             print()
 
-    def __str__(self):
-        print(f"player {self.player_idx} has belief:")
-        for idx, key in enumerate(self.belief.keys()):
-            print(f"    {idx} = {self.belief[key]}")
+    def __str__(self) -> str:
+        knowledge = str()
+        knowledge += f"player {self.player_idx} believes:\n"
+        for player_idx, cards in self.belief.items():
+            knowledge += (
+                f" player {player_idx} has {self.player_cards[player_idx]} cards\n"
+            )
+            knowledge += (
+                f"none are known\n"
+                if len(cards) == 0
+                else "has at least the following cards\n"
+            )
+
+            for card in cards:
+                knowledge += f"\t  {card}\n"
+        knowledge.removesuffix("\n")
+        return knowledge
 
     def remove_card_by_name(self, name: str, player_idx: int):
         """check if you can do this! with if known_by_player"""
@@ -66,7 +82,9 @@ class AgentKnowledge:
                 return True
         return False
 
-    def find_card_by_name(self, name, object_list: List[Card]) -> Tuple[bool, EmptyCard]:
+    def find_card_by_name(
+        self, name, object_list: List[Card]
+    ) -> Tuple[bool, EmptyCard]:
         """:returns bool: known card? and the new knowledge card"""
         for card in object_list:
             if card.name == name:

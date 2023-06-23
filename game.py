@@ -6,8 +6,8 @@ import random
 from state import GameState
 from strategies import RandomStrategy, HighStatStrategy, KnowledgeStrategy
 from utils import loadCards
-from cfg import GameConfig, CardConfig
-from cards import Card, init_cards, copy_card, EmptyCard
+from cfg import GameConfig, CardConfig, GameMode
+from cards import Card, init_cards, copy_card, EmptyCard, Deck
 from agents import Player
 
 
@@ -35,17 +35,22 @@ class Game:
         self.config = GameConfig()
         self.eliminated_players = dict()
         self.round = 1
-        self.next_round_starter = "Player 0"  # gets to start first #just for logging this line
+        self.next_round_starter = (
+            "Player 0"  # gets to start first #just for logging this line
+        )
         self.last_winner = None
         self.last_chosen_stat = -1
+        self.scores = dict()
 
     # Initialize and start the game
-    def startGame(self, config: GameConfig):
-        self.initializeGame(config)
-        self.gameLoop()
+    def start_game(self, config: GameConfig):
+        self.initialize_game(config)
+        self.game_loop()
 
-    def initializeGame(self, config: GameConfig):
-        card_list = init_cards(config.player_count, config.cards_pp, config.stats_count, config.stat_points)
+    def initialize_game(self, config: GameConfig):
+        card_list = init_cards(
+            config.player_count, config.cards_pp, config.stats_count, config.stat_points
+        )
         self.state.deck = card_list
         self.state.players = []
         self.config = config
@@ -56,106 +61,140 @@ class Game:
 
             # create "smart" player
             if idx == 0:
-                player = Player(name=name,
-                                idx=idx,
-                                card_list=card_list[idx * config.cards_pp: (idx + 1) * config.cards_pp],
-                                config=GameConfig(),
-                                strategy=KnowledgeStrategy())
+                player = Player(
+                    name=name,
+                    idx=idx,
+                    card_list=card_list[
+                        idx * config.cards_pp : (idx + 1) * config.cards_pp
+                    ],
+                    config=GameConfig(),
+                    strategy=KnowledgeStrategy(),
+                )
             # create other players TODO can also do if else, if we want multiple smart agents/testing:
             else:
-                player = Player(name=name,
-                                idx=idx,
-                                card_list=card_list[idx * config.cards_pp: (idx + 1) * config.cards_pp],
-                                config=GameConfig(),
-                                strategy=RandomStrategy())
+                player = Player(
+                    name=name,
+                    idx=idx,
+                    card_list=card_list[
+                        idx * config.cards_pp : (idx + 1) * config.cards_pp
+                    ],
+                    config=GameConfig(),
+                    strategy=RandomStrategy(),
+                )
 
             self.state.players.append(player)
+            self.scores[player] = 0
 
-    def gameLoop(self):
-        while True:
-            playedCards, winner, stat_idx = self.playRound()
-            if self.updateGameState(playedCards, winner, stat_idx):
+    def game_loop(self):
+        while not self.has_ended():
+            playedCards, winner, stat_idx = self.play_round()
+            if self.update_game_state(playedCards, winner, stat_idx):
                 break
 
     def start_player(self, start_player_idx=0):
         """method which return player idx which should start next round, if no winner yet (first round) player 0
-        starts """
+        starts"""
         if self.last_winner is None:
             return self.state.players[start_player_idx]
         return self.last_winner
 
-    def playRound(self):
+    def play_round(self):
         # The next player takes a turn.
         start_player: Player = self.start_player()
 
         stat_idx = start_player.start_turn()
         self.last_chosen_stat = stat_idx  # for mesa for now
 
+        winner: Player
         round_result = {}
         for player in self.state.players:
             if player.get_name() in self.eliminated_players:
                 continue
-            round_result[player.get_name()] = player.match_stat(stat_idx=stat_idx)
+            round_result[player] = player.match_stat(stat_idx=stat_idx)
 
+        # sorted list of stat values in play
         round_result = dict(
-            sorted(round_result.items(), key=lambda x: x[1], reverse=True))  # todo change this for ties!
-        winner_name = next(iter(round_result))
-        self.next_round_starter = winner_name
+            sorted(round_result.items(), key=lambda x: x[1], reverse=True)
+        )  # todo change this for ties!
+        winner = next(iter(round_result))
+        self.next_round_starter = winner.name
 
-        card_pool = dict()
-        winner: Player
-
-        """Get all cards, and 'remember' winner"""
-        for player in self.state.players:
-            if player.get_name() == winner_name:
-                winner = player
-            if player.get_name() in self.eliminated_players:
-                continue
-            card_pool[player.idx] = player.hand_card()
+        # collect the cards that were played in this round
+        card_pool = self.collect_cards()
 
         return card_pool, winner, stat_idx
 
-    def updateGameState(self, card_pool: Dict[int, Card], winner: Player, stat_idx: int):
+    def collect_cards(self) -> dict:
+        """collects all the cards that were played in the active round"""
+        card_pool = dict()
+        # get all cards from each player
+        for player in self.state.players:
+            if player.get_name() in self.eliminated_players:
+                continue
+            # in the epistemic game mode, all cards remain with the players
+            if self.config.game_mode == GameMode.STANDARD:
+                card_pool[player.idx] = player.hand_card()
+            else:
+                card_pool[player.idx] = player.get_top_card()
+
+        return card_pool
+
+    def update_game_state(
+        self, card_pool: Dict[int, Card], winner: Player, stat_idx: int
+    ) -> bool:
+        """Updates the game state. Returns true if there is a winner, false otherwise"""
         # Add all won cards to the list of the winner.
-        winner.give_cards(cards=list(card_pool.values()))  # updates and shuffles
+        if self.config.game_mode == GameMode.STANDARD:
+            # updates and shuffles the cards for the winner
+            winner.give_cards(cards=list(card_pool.values()))
+        else:
+            # all cards should be shuffled but none are transferred
+            for player in self.players_in_game():
+                player.shuffle_cards()
 
-        #update players individual beliefs
-        if self.config.full_announcement:
-            # all players know all whole cards
-            for player in self.state.players:
-                knowledge = winner_knowledge(card_pool)
-                player.update_beliefs(cards=knowledge, winner_idx=winner.idx)
-        else: 
-            # only winner knows all whole cards, losers know relevant stat
-            for player in self.state.players:
-                if player == winner:
-                    knowledge = winner_knowledge(card_pool) #winner knows whole cards
-                else:
-                    knowledge = loser_knowledge(card_pool, stat_idx=stat_idx)       #losers only know relevant stat + name is now to in winner his hands
-
-                player.update_beliefs(cards=knowledge, winner_idx=winner.idx)
-
-
+        self.update_player_beliefs(card_pool, winner, stat_idx)
 
         if self.config.debug:
             self.print()
-
-        winner, players = self.players_in_game()
 
         for key, value in self.eliminated_players.items():
             if value == self.round:
                 print(f"player: {key}, got eliminated in round {value}")
 
+        players = self.players_in_game()
+        # update the score
+        self.scores[winner] += 1
         # check if we have a winner
-        if winner:
+        if self.has_winner():
             print("Game is over, ", players[0].get_name(), " won the game!")
             return True
         self.round += 1
 
         return False
 
-    def players_in_game(self) -> tuple[bool, list[Player]]:
-        """:returns players that are still playing (and only 1 if there is a winner) + boolean if winner is found"""
+    def update_player_beliefs(
+        self, card_pool: Dict[int, Card], winner: Player, stat_idx: int
+    ):
+        # update players individual beliefs
+        if self.config.full_announcement:
+            # all players know all whole cards
+            for player in self.state.players:
+                knowledge = winner_knowledge(card_pool)
+                player.update_beliefs(cards=knowledge, winner_idx=winner.idx)
+        else:
+            # only winner knows all whole cards, losers know relevant stat
+            for player in self.state.players:
+                if player == winner:
+                    knowledge = winner_knowledge(card_pool)  # winner knows whole cards
+                else:
+                    knowledge = loser_knowledge(
+                        card_pool, stat_idx=stat_idx
+                    )  # losers only know relevant stat + name is now to in winner his hands
+
+                player.update_beliefs(cards=knowledge, winner_idx=winner.idx)
+
+    def players_in_game(self) -> list[Player]:
+        """:returns players that are still playing (and only 1 if there is a winner)"""
         still_playing = []
         for player in self.state.players:
             if player.has_cards():
@@ -163,10 +202,56 @@ class Game:
             elif player.get_name() not in self.eliminated_players.keys():
                 self.eliminated_players[player.get_name()] = self.round
 
-        if len(still_playing) == 1:  # winner known:
-            return True, still_playing
+        return still_playing
 
-        return False, still_playing
+    def has_winner(self) -> bool:
+        # a standard game has a winner if there is only one player left
+        if self.config.game_mode == GameMode.STANDARD:
+            return len(self.players_in_game()) == 1
+        elif self.is_at_round_or_point_limit():
+            return self.single_high_scorer()
+
+        return False
+
+    def game_winner(self) -> Player:
+        """Returns the game winner, if there is one"""
+        if not self.has_winner():
+            return None
+        if self.config.game_mode == GameMode.STANDARD:
+            return self.players_in_game()[0]
+        elif (
+            self.config.game_mode == GameMode.EPISTEMIC_ROUND_LIMIT
+            or self.config.game_mode == GameMode.EPISTEMIC_POINT_LIMIT
+        ):
+            return self.single_high_scorer()
+        return None
+
+    def is_at_round_or_point_limit(self) -> bool:
+        """Returns true if the game has ended by reaching the maximum number of rounds or points"""
+        if self.config.game_mode == GameMode.EPISTEMIC_ROUND_LIMIT:
+            return self.round >= self.config.max_round_or_score
+        elif self.config.game_mode == GameMode.EPISTEMIC_POINT_LIMIT:
+            high_scorer = self.single_high_scorer()
+            return (
+                high_scorer != None
+                and self.scores[high_scorer] >= self.config.max_round_or_score
+            )
+
+        return False
+
+    def has_ended(self) -> bool:
+        if self.has_winner():
+            return True
+
+        if self.config.game_mode == GameMode.EPISTEMIC_ROUND_LIMIT:
+            return self.is_at_round_or_point_limit()
+
+    def single_high_scorer(self) -> Player:
+        """returns the player with the single highest score, if any"""
+        high_score = max(self.scores.values())
+        if list(self.scores.values()).count(high_score) == 1:
+            return sorted(self.scores.items(), key=lambda x: x[1], reverse=True)[0][0]
+        return None
 
     # Debug function to print the game status.
     def print(self):
@@ -184,5 +269,5 @@ class Game:
         return state
 
     def __str__(self) -> str:
-        state = "Game: \n" + str(self.state)
+        state = f"Game: Round {self.round}\n" + str(self.state)
         return state
