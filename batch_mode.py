@@ -17,13 +17,31 @@ def main():
     config_two.game_mode = cfg.GameMode.EPISTEMIC_POINT_LIMIT
 
     # start the batch
-    batch_run(
+    results = batch_run(
         mdl.TopTrumpsModel,
         # here, each parameter (config) set is passed in a list
         parameters={"config": [config, config_two]},
         # each configuration combination is run up to this number of times
         iterations=config.batch_mode_run_limit,
     )
+
+    # results captures the collected data from the model reporters. We summarize them here
+    win_counts = dict()
+    for result in results:
+        # names here map onto the defined data collectors of the model
+        winner = result["Winner"]
+        if winner.name in win_counts:
+            win_counts[winner.name] += 1
+        else:
+            win_counts[winner.name] = 1
+
+    # print the number of games won for each player
+    # NOTE: this does combine player names from different configurations
+    # run only a single configuration OR differentiate the configurations in the
+    # DataCollector
+    for player in win_counts:
+        # in case of a tie, None will be reported as the winner
+        print(str(player) + " " + str(win_counts[player]))
 
 
 if __name__ == "__main__":

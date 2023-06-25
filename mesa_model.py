@@ -32,7 +32,11 @@ class TopTrumpsModel(mesa.Model):
         self.from_config(config)
         # map datacollector to print functions
         self.datacollector = mesa.DataCollector(
-            model_reporters={"State": self.game.__str__}
+            model_reporters={
+                "State": self.game.__str__,
+                "Winner": self.game.game_winner,
+                "Number of rounds": "self.game.round",
+            }
         )
 
     # initialize a game with configuration
