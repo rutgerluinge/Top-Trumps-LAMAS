@@ -93,7 +93,8 @@ class Game:
 
     def game_loop(self):
         while not self.has_ended():
-            self.createKripkeModel()
+            if self.config.generate_kripke:
+                self.createKripkeModel()
             playedCards, winner, stat_idx = self.play_round()
             if self.update_game_state(playedCards, winner, stat_idx):
                 break

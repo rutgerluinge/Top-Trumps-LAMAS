@@ -24,7 +24,7 @@ GAME_MODE = GameMode.STANDARD
 MAX_ROUND_OR_SCORE = 10
 
 #
-GENERATE_KRIPKE_MODEL = False
+GENERATE_KRIPKE_MODEL = True
 
 
 # Behind the screens parameters
