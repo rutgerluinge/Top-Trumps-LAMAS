@@ -37,7 +37,7 @@ for player, card, strategy, winrate, stat in zip(players, cards, strategies, win
 
 # Two player plot
 for i in range(0,3):
-    plt.title("Win rate of one smart agent in a" + str(i + 2) + " player game.")
+    plt.title("Win rate of one smart agent in a " + str(i + 2) + " player game.")
     plt.xlabel("Cards per player")
     plt.ylabel("Winrate (%) of the smart player")
     plt.ylim(0,100)
