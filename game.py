@@ -3,12 +3,17 @@ from typing import List, Tuple, Dict
 import numpy as np
 import random
 
+import itertools
+import networkx as nx
+import matplotlib.pyplot as plt
+
 from state import GameState
 from strategies import RandomStrategy, HighStatStrategy, KnowledgeStrategy
 from utils import loadCards
 from cfg import GameConfig, CardConfig, GameMode
 from cards import Card, init_cards, copy_card, EmptyCard, Deck
 from agents import Player
+
 
 
 def winner_knowledge(cards: Dict[int, Card]):
@@ -85,8 +90,10 @@ class Game:
             self.state.players.append(player)
             self.scores[player] = 0
 
+
     def game_loop(self):
         while not self.has_ended():
+            self.createKripkeModel()
             playedCards, winner, stat_idx = self.play_round()
             if self.update_game_state(playedCards, winner, stat_idx):
                 break
@@ -271,3 +278,110 @@ class Game:
     def __str__(self) -> str:
         state = f"Game: Round {self.round}\n" + str(self.state)
         return state
+
+    def createKripkeModel(self):
+
+        # Create instance of graph
+        graph = nx.Graph()
+        
+        cards = []
+        for player in self.state.players:
+            for card in player.cardList:
+                cards.append(card.name[:2])
+        
+        worlds = []
+        
+        allCombis = []
+        for player in self.state.players:
+            combis = []
+            for i in range(len(cards) + 1):
+                for combi in itertools.combinations(cards, i):
+                    if len(combi) == len(player.cardList):
+                        combis.append(combi)
+            allCombis.append(combis)
+                
+        # For 2 players
+        possibleCombis = []
+        if len(self.state.players) == 2:
+            for combi in allCombis[0]:
+                for combi2 in allCombis[1]:
+                    dupes = [i for i in combi if i in combi2]
+                    if len(dupes) == 0:
+                        possibleCombis.append([combi, combi2])
+
+        # For 3 players
+        if len(self.state.players) == 3:
+            for combi in allCombis[0]:
+                for combi2 in allCombis[1]:
+                    dupes = [i for i in combi if i in combi2]
+                    if len(dupes) == 0:
+                        for combi3 in allCombis[2]:
+                            dupes = [i for i in combi3 if i in combi + combi2]
+                            if len(dupes) == 0:
+                                possibleCombis.append([combi, combi2, combi3])
+
+        for combi in possibleCombis:
+            world = ""
+            for player in combi:
+                world += "{"
+                for name in player:
+                    world += name + ","
+                if world.endswith(","):
+                    world = world[:-1]
+                world += "}, "
+            world = world[:-2]
+            worlds.append(world)
+
+        worlds = self.checkBeliefs(worlds)
+
+        # Create edges for every world connecting with every other world
+        edges = []
+        for i in range(len(worlds)):
+            for j in range(i, len(worlds)):
+                edges.append((worlds[i], worlds[j]))
+
+        # Create graph and store it in self
+        graph.add_nodes_from(worlds)
+        graph.add_edges_from(edges)
+        self.state.kripkeModel = graph
+
+        self.showKripkeModel()
+        
+    def showKripkeModel(self):
+
+        # Drawing options
+        options = {
+            "node_size": 400,
+            "with_labels": True,
+            #"font_weight": 'bold',
+            "width": 1,
+        }
+
+        nx.draw_circular(self.state.kripkeModel, **options)
+        plt.show()
+
+    # Function to check which possible worlds are no longer possible due to an agents belief
+    def checkBeliefs(self, worlds):
+        new_worlds = worlds.copy()
+
+        # Check for every world wether it has to be removed
+        for world in worlds:
+            # Get the belief of only one player (Every player has the same belief)
+            for belief in self.state.players[0].agent_knowledge.belief.keys():
+                world_things = world.split("{")
+                if world_things[0] == '':
+                    del world_things[0]
+
+                # Check every card in the agent's belief per player and check whether
+                # the world contains those cards for that player, if not, the world
+                # can be removed.
+                for card in self.state.players[0].agent_knowledge.belief[belief]:
+                    equals = False
+                    for thing in world_things[belief].split("}")[0].split(","):
+                        if thing == card.name[:2]:
+                            equals = True
+                    if not equals:
+                        if world in new_worlds:
+                            new_worlds.remove(world)
+
+        return new_worlds

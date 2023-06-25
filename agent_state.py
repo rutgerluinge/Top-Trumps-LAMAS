@@ -22,6 +22,7 @@ class AgentKnowledge:
         """dictionary is necessary as we have to make sure the player and card are matched"""
 
         for idx_player, card in cards.items():
+
             if self.config.game_mode == GameMode.STANDARD:
                 self.player_cards[idx_player] -= 1  # correct card count
                 self.player_cards[winner_idx] += 1  # correct card count
