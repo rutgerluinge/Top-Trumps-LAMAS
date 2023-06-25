@@ -20,6 +20,8 @@ Contains mesa classes that encapsulate the game.
 ### main.py
 The main file which starts everything
 
+### batch_mode.py
+Runs the model in batch mode, based on the default configured settings. Additional configurations can be added in this file to compare against the default.
 ### game.py
 Main game class, handling most of the game.
 

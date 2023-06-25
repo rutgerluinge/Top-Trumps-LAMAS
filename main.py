@@ -6,11 +6,14 @@ import cfg
 
 # Main function obviously
 def main():
-    random.seed(cfg.RANDOM_SEED)
-    topTrump = Game()
+    # use the default configuration
+    config = cfg.GameConfig()
+    cfg.global_configuration(config)
 
-    # Start the game with default configuration
-    topTrump.start_game(cfg.GameConfig())
+    # Start the game
+    topTrump = Game()
+    topTrump.start_game(config)
+    
     print(str(topTrump))
     if topTrump.has_winner():
         winner = topTrump.game_winner()

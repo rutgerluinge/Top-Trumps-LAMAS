@@ -20,13 +20,23 @@ class PlayerAgent(mesa.Agent):
 
 # mesa driven model
 class TopTrumpsModel(mesa.Model):
+    def __init__(self, **kwargs) -> None:
+        config = kwargs.get("config")
+        self.__init__(config=config)
+
     # by default creates a game with default settings
-    def __init__(self) -> None:
+    def __init__(self, config: cfg.GameConfig = cfg.GameConfig()) -> None:
         super().__init__(self)
-        self.from_config(cfg.GameConfig())
+        # we need a base scheduler just to comply with batch mode, not used
+        self.schedule = mesa.time.BaseScheduler(self)
+        self.from_config(config)
         # map datacollector to print functions
         self.datacollector = mesa.DataCollector(
-            model_reporters={"State": self.game.__str__}
+            model_reporters={
+                "State": self.game.__str__,
+                "Winner": self.game.game_winner,
+                "Number of rounds": "self.game.round",
+            }
         )
 
     # initialize a game with configuration
