@@ -48,6 +48,8 @@ class TopTrumpsModel(mesa.Model):
 # steps the model until there is a winner
 def run_to_completion(model: TopTrumpsModel):
     while not model.game.has_ended():
+        if model.game.config.generate_kripke:
+            model.game.createKripkeModel()
         model.step()
 
 
