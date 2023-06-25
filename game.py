@@ -15,6 +15,14 @@ from cards import Card, init_cards, copy_card, EmptyCard, Deck
 from agents import Player
 
 
+def get_strategy(index:int):
+    if index == 1:
+        return RandomStrategy()
+    elif index == 2:
+        return HighStatStrategy()
+    elif index == 3:
+        return KnowledgeStrategy()
+
 def winner_knowledge(cards: Dict[int, Card]):
     knowledge = dict()
     for key, card in cards.items():
@@ -72,7 +80,7 @@ class Game:
                         idx * config.cards_pp : (idx + 1) * config.cards_pp
                     ],
                     config=config,
-                    strategy=KnowledgeStrategy(),
+                    strategy=get_strategy(config.smart_strategy.value),
                 )
             # create other players TODO can also do if else, if we want multiple smart agents/testing:
             else:
@@ -83,7 +91,7 @@ class Game:
                         idx * config.cards_pp : (idx + 1) * config.cards_pp
                     ],
                     config=config,
-                    strategy=RandomStrategy(),
+                    strategy=get_strategy(config.dummy_strategy.value)
                 )
 
             self.state.players.append(player)
