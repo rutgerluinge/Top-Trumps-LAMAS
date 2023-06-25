@@ -48,7 +48,7 @@ def pair_wise_comparison(stats: List[int], other_stats: List[int]):
 
 
 class KnowledgeStrategy(Strategy):
-    """CHoose stat with most pairwise wins (propability)"""
+    """Choose stat with most pairwise wins (propability) based on belief"""
 
     def choose_action(self, top_card: Card, state: AgentKnowledge):
         odds = [0] * state.config.stats_count
