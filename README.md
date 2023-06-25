@@ -1,5 +1,6 @@
 # Top-Trumps-LAMAS
 LAMAS course project about public statements in a simplified Top Trumps game!
+The report can be found on the following website: https://rutgerluinge.github.io/Top-Trumps-Website/
 
 ### install required packages:
 pip install -r requirements.txt
