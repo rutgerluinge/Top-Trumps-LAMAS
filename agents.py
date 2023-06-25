@@ -69,9 +69,13 @@ class Player:
 
     # Debug print function for players
     def __str__(self) -> str:
-        state = self.name
+        state = f"{self.name}\n"
+        if len(self.cardList):
+            state += "\tCurrent deck:\n"
         for card in self.cardList:
-            state += "\n\t" + str(card)
+            state += f"\t\t{card}"
+            if card != self.cardList[-1]:
+                state += "\n"
         return state
 
     def has_cards(self) -> bool:

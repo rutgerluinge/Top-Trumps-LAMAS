@@ -22,7 +22,6 @@ class AgentKnowledge:
         """dictionary is necessary as we have to make sure the player and card are matched"""
 
         for idx_player, card in cards.items():
-
             if self.config.game_mode == GameMode.STANDARD:
                 self.player_cards[idx_player] -= 1  # correct card count
                 self.player_cards[winner_idx] += 1  # correct card count
@@ -53,19 +52,19 @@ class AgentKnowledge:
 
     def __str__(self) -> str:
         knowledge = str()
-        knowledge += f"player {self.player_idx} believes:\n"
         for player_idx, cards in self.belief.items():
             knowledge += (
-                f" player {player_idx} has {self.player_cards[player_idx]} cards\n"
+                f"Player {player_idx} has {self.player_cards[player_idx]} cards\n"
             )
             knowledge += (
-                f"none are known\n"
+                f"\tnone are known\n"
                 if len(cards) == 0
-                else "has at least the following cards\n"
+                else "\thas at least the following cards\n"
             )
 
             for card in cards:
-                knowledge += f"\t  {card}\n"
+                knowledge += f"\t\t{card}\n"
+
         knowledge.removesuffix("\n")
         return knowledge
 

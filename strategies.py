@@ -24,12 +24,18 @@ class RandomStrategy(Strategy):
     def choose_action(self, top_card: Card, state: AgentKnowledge):
         return np.random.randint(0, len(top_card.stats))
 
+    def __str__(self) -> str:
+        return "Random"
+
 
 class HighStatStrategy(Strategy):
     """Chooses highest stat of the card"""
 
     def choose_action(self, top_card: Card, state: AgentKnowledge):
         return np.argmax(top_card.stats)
+
+    def __str__(self) -> str:
+        return "HighestStat"
 
 
 def pair_wise_comparison(stats: List[int], other_stats: List[int]):
@@ -79,3 +85,6 @@ class KnowledgeStrategy(Strategy):
             if maximum_stat_idx == None:
                 return 0
             return maximum_stat_idx
+
+    def __str__(self) -> str:
+        return "Knowledge"
