@@ -8,12 +8,14 @@ import cfg
 def main():
     # use the default configuration
     config = cfg.GameConfig()
+    # set debug flag here for more text outputs
+    config.debug = True
     cfg.global_configuration(config)
 
     # Start the game
     topTrump = Game()
     topTrump.start_game(config)
-    
+
     print(str(topTrump))
     if topTrump.has_winner():
         winner = topTrump.game_winner()

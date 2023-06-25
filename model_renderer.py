@@ -1,11 +1,6 @@
 import mesa
 from top_trumps_model import TopTrumpsModel
-
-
-def to_html(input: str):
-    # replace newlines with paragraph breaks (html)
-    html = input.replace("\n", "<br/>")
-    return html
+from formatting import *
 
 
 class RenderState(mesa.visualization.TextElement):
@@ -14,26 +9,18 @@ class RenderState(mesa.visualization.TextElement):
 
     # renders the state of the game as text
     def render(self, model: TopTrumpsModel):
+        rendered_text = str()
         # if the game has a winner, announce it
         if model.game.has_winner():
-            return to_html(
-                str(
-                    "Game is over, "
-                    + model.game.players_in_game()[0].get_name()
-                    + " won the game!"
-                )
-                + f"\n Final state: \n\n {model.game.print_interface()}"
+            rendered_text += bold_face(
+                f"Game is over, {model.game.players_in_game()[0].get_name()} won the game!\n"
             )
         elif model.game.has_ended():
-            return to_html(
-                str(
-                    "The game has ended without a winner!"
-                    + f"\n Final state: \n\n {model.game.print_interface()}"
-                )
-            )
+            rendered_text += bold_face("The game has ended without a winner!\n")
 
         # render the current game state
-        return to_html(model.game.print_interface())
+        rendered_text += model.game.print_interface()
+        return to_html(rendered_text)
 
 
 class RenderKnowledge(mesa.visualization.TextElement):
@@ -41,7 +28,8 @@ class RenderKnowledge(mesa.visualization.TextElement):
         super().__init__()
 
     def render(self, model: TopTrumpsModel):
-        knowledge = str()
-        for agent in model.game.state.players:
-            knowledge += "\n" + str(agent.agent_knowledge)
+        # render only a single knowledge state, as they are all equivalent
+        knowledge = bold_face("Agent belief state\n")
+        if len(model.game.state.players):
+            knowledge += f"{model.game.state.players[0].agent_knowledge}"
         return to_html(knowledge)

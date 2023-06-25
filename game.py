@@ -13,15 +13,17 @@ from utils import loadCards
 from cfg import GameConfig, CardConfig, GameMode
 from cards import Card, init_cards, copy_card, EmptyCard, Deck
 from agents import Player
+from formatting import bold_face
 
 
-def get_strategy(index:int):
+def get_strategy(index: int):
     if index == 1:
         return RandomStrategy()
     elif index == 2:
         return HighStatStrategy()
     elif index == 3:
         return KnowledgeStrategy()
+
 
 def winner_knowledge(cards: Dict[int, Card]):
     knowledge = dict()
@@ -52,6 +54,7 @@ class Game:
         )
         self.last_winner = None
         self.last_chosen_stat = -1
+        self.last_played_trick = dict()
         self.scores = dict()
 
     # Initialize and start the game
@@ -91,7 +94,7 @@ class Game:
                         idx * config.cards_pp : (idx + 1) * config.cards_pp
                     ],
                     config=config,
-                    strategy=get_strategy(config.dummy_strategy.value)
+                    strategy=get_strategy(config.dummy_strategy.value),
                 )
 
             self.state.players.append(player)
@@ -135,7 +138,8 @@ class Game:
 
         # collect the cards that were played in this round
         card_pool = self.collect_cards()
-
+        # store this for visualization
+        self.last_played_trick = card_pool
         return card_pool, winner, stat_idx
 
     def collect_cards(self) -> dict:
@@ -181,7 +185,8 @@ class Game:
         self.last_winner = winner
         # check if we have a winner
         if self.has_winner():
-            print("Game is over, ", players[0].get_name(), " won the game!")
+            if self.config.debug:
+                print("Game is over, ", players[0].get_name(), " won the game!")
             return True
         self.round += 1
 
@@ -272,15 +277,28 @@ class Game:
     def print(self):
         print(str(self))
 
-    def print_interface(self):
+    def print_interface(self) -> str:
         """print mesa interface (bit prettier for now)"""
-        state = ""
-        state += f"Player which may choose next round: {self.next_round_starter} \n"
-        state += f"Round {self.round} \n"
+        state = f"Game mode: {self.config.game_mode}\n"
+        state += f"Previous round winner: {self.last_winner.name if self.last_winner != None else self.last_winner}, using {self.last_winner.strategy if self.last_winner != None else self.last_winner} \n"
+        state += bold_face(f"Round {self.round} \n")
+        if self.round != 1:
+            state += f"\tChosen stat: {CardConfig.stat_names[self.last_chosen_stat]}\n"
+            state += f"\tPlayed hand (winner emphasized):\n"
+            # show the hand that was played
+            for player_idx in self.last_played_trick.keys():
+                played_card = f"\t{self.state.players[player_idx].name} played {self.last_played_trick[player_idx]}\n"
+                if self.last_winner == self.state.players[player_idx]:
+                    # emphasize the winners card
+                    played_card = f"<b>{played_card}</b>"
+                state += played_card
+            state += "\n"
 
-        state += f"\t  chosen stat: {CardConfig.stat_names[self.last_chosen_stat]}"
+        state += bold_face("Current state of the game:\n")
         for player in self.state.players:
-            state += "\n\t" + str(player)
+            state += f"\t{player}"
+            if player != self.state.players[-1]:
+                state += "\n"
         return state
 
     def __str__(self) -> str:
