@@ -1,7 +1,8 @@
 # Top-Trumps-LAMAS
 LAMAS course project about public statements in a simplified Top Trumps game!
+
 Group 12
-Rutger Luinge, Ben van der Laan, Thomas Vos and Marnix Jansma
+Rutger Luinge, Ben van der Laan, Thomas Vos and Marnix Jansma.
 The report can be found on the following website: https://rutgerluinge.github.io/Top-Trumps-Website/
 
 ### install required packages:
