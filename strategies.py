@@ -51,7 +51,7 @@ class KnowledgeStrategy(Strategy):
     """CHoose stat with most pairwise wins (propability)"""
 
     def choose_action(self, top_card: Card, state: AgentKnowledge):
-        odds = [0] * GameConfig.stats_count
+        odds = [0] * state.config.stats_count
 
         for player_idx in state.belief.keys():
             if player_idx == state.player_idx:

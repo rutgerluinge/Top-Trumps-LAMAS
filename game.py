@@ -15,7 +15,6 @@ from cards import Card, init_cards, copy_card, EmptyCard, Deck
 from agents import Player
 
 
-
 def winner_knowledge(cards: Dict[int, Card]):
     knowledge = dict()
     for key, card in cards.items():
@@ -72,7 +71,7 @@ class Game:
                     card_list=card_list[
                         idx * config.cards_pp : (idx + 1) * config.cards_pp
                     ],
-                    config=GameConfig(),
+                    config=config,
                     strategy=KnowledgeStrategy(),
                 )
             # create other players TODO can also do if else, if we want multiple smart agents/testing:
@@ -83,13 +82,12 @@ class Game:
                     card_list=card_list[
                         idx * config.cards_pp : (idx + 1) * config.cards_pp
                     ],
-                    config=GameConfig(),
+                    config=config,
                     strategy=RandomStrategy(),
                 )
 
             self.state.players.append(player)
             self.scores[player] = 0
-
 
     def game_loop(self):
         while not self.has_ended():
@@ -172,6 +170,7 @@ class Game:
         players = self.players_in_game()
         # update the score
         self.scores[winner] += 1
+        self.last_winner = winner
         # check if we have a winner
         if self.has_winner():
             print("Game is over, ", players[0].get_name(), " won the game!")
@@ -281,17 +280,16 @@ class Game:
         return state
 
     def createKripkeModel(self):
-
         # Create instance of graph
         graph = nx.Graph()
-        
+
         cards = []
         for player in self.state.players:
             for card in player.cardList:
                 cards.append(card.name[:2])
-        
+
         worlds = []
-        
+
         allCombis = []
         for player in self.state.players:
             combis = []
@@ -300,7 +298,7 @@ class Game:
                     if len(combi) == len(player.cardList):
                         combis.append(combi)
             allCombis.append(combis)
-                
+
         # For 2 players
         possibleCombis = []
         if len(self.state.players) == 2:
@@ -347,14 +345,13 @@ class Game:
         self.state.kripkeModel = graph
 
         self.showKripkeModel()
-        
-    def showKripkeModel(self):
 
+    def showKripkeModel(self):
         # Drawing options
         options = {
             "node_size": 400,
             "with_labels": True,
-            #"font_weight": 'bold',
+            # "font_weight": 'bold',
             "width": 1,
         }
 
@@ -371,7 +368,7 @@ class Game:
             # Get the belief of only one player (Every player has the same belief)
             for belief in self.state.players[0].agent_knowledge.belief.keys():
                 world_things = world.split("{")
-                if world_things[0] == '':
+                if world_things[0] == "":
                     del world_things[0]
 
                 # Check every card in the agent's belief per player and check whether

@@ -99,7 +99,6 @@ def init_cards(
     player_count=2, cards_per_player=2, stats_per_card=2, stat_points=100
 ) -> List[Card]:
     """Method to init cards randomly (but with seed so not random), and shuffle them"""
-    np.random.seed(GameConfig.seed)
     total_cards = player_count * cards_per_player
     card_list = []
 
