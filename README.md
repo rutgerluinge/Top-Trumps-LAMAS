@@ -13,6 +13,14 @@ pip install -r requirements.txt
 ```python mesa_model.py```
 This runs the model once and prints the output to stdout, then spawns a mesa server with a new model that can be interacted with.
 
+### as a batch run
+```python batch_run.py```
+This will start the batch runs to obtain the results. It tests a bunch of different configurations. it will overwrite the results in resutls.txt.
+
+### create the plots
+```python plot.py```
+This creates the plots.
+
 ## Files
 
 ### mesa_model.py
