@@ -74,6 +74,12 @@ def copy_card(card: Card) -> EmptyCard:
 Deck = list[Card]
 
 
+def generate_card_name(card_idx):
+    if card_idx >= 0 and card_idx < len(CardConfig.card_names):
+        return CardConfig.card_names[card_idx]
+    return "AudienceMember" + str(card_idx)
+
+
 def random_stats(total_stats: int, stat_points: int):
     """method to randomly create stats (evenly)"""
     stats = [0 for _ in range(total_stats)]
@@ -108,7 +114,7 @@ def init_cards(
         generated_stats = random_stats(
             total_stats=stats_per_card, stat_points=stat_points
         )
-        card_list.append(Card(name=card_names[idx], stats=generated_stats))
+        card_list.append(Card(name=generate_card_name(idx), stats=generated_stats))
 
     np.random.shuffle(card_list)
     return card_list

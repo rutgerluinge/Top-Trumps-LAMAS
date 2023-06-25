@@ -20,7 +20,7 @@ def main():
     results = batch_run(
         mdl.TopTrumpsModel,
         # here, each parameter (config) set is passed in a list
-        parameters={"config": [config, config_two]},
+        parameters={"config": [config]},
         # each configuration combination is run up to this number of times
         iterations=config.batch_mode_run_limit,
     )
@@ -30,10 +30,11 @@ def main():
     for result in results:
         # names here map onto the defined data collectors of the model
         winner = result["Winner"]
-        if winner.name in win_counts:
-            win_counts[winner.name] += 1
+        name = winner.name if winner != None else "Tie"
+        if name in win_counts:
+            win_counts[name] += 1
         else:
-            win_counts[winner.name] = 1
+            win_counts[name] = 1
 
     # print the number of games won for each player
     # NOTE: this does combine player names from different configurations
