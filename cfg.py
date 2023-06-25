@@ -84,7 +84,7 @@ class GameConfig:
     generate_kripke: bool = GENERATE_KRIPKE_MODEL
     batch_mode_run_limit = BATCH_MODE_NUMBER_OF_RUNS
     smart_strategy: StrategyEnum = StrategyEnum.SMARTSTAT
-    dummy_strategy: StrategyEnum = StrategyEnum.HIGHSTAT
+    dummy_strategy: StrategyEnum = StrategyEnum.RANDOMSTAT
 
 
 def global_configuration(config: GameConfig):

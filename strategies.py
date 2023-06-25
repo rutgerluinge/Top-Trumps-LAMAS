@@ -61,7 +61,17 @@ class KnowledgeStrategy(Strategy):
             for card in known_cards:
                 win = pair_wise_comparison(top_card.stats, card.stats)
                 odds = np.add(odds, win)
-        print(
-            f"player chooses stat {np.argmax(odds)} with card stats {top_card.stats} as a result of smart strategy"
-        )
-        return np.argmax(odds)
+
+        max_odds = max(odds)
+        stat_idx = [i for i, value in enumerate(odds) if value == max_odds]
+        if len(stat_idx) == 1:
+            return np.argmax(odds)
+        else:
+            maximum_stat = 0
+            maximum_stat_idx = None
+            for idx in stat_idx:
+                if top_card.stats[idx] > maximum_stat:
+                    maximum_stat = top_card.stats[idx]
+                    maximum_stat_idx = idx
+
+            return maximum_stat_idx
