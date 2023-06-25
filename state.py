@@ -41,8 +41,6 @@ class GameState:
         string = str()
         for player in self.players:
             string += "\t" + str(player)
-            if (player != self.players[-1]):
+            if player != self.players[-1]:
                 string += "\n"
         return string
-
-
