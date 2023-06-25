@@ -1,0 +1,432 @@
+Players: 2 Cards: 3 Strategy: Smart Stat_count: 2
+Player 0 5114
+Player 1 4886
+Players: 2 Cards: 3 Strategy: Highest_stat Stat_count: 2
+Player 0 5701
+Player 1 4299
+Players: 2 Cards: 3 Strategy: Random Stat_count: 2
+Player 0 8376
+Player 1 1624
+Players: 2 Cards: 3 Strategy: Smart Stat_count: 3
+Player 0 5110
+Player 1 4890
+Players: 2 Cards: 3 Strategy: Highest_stat Stat_count: 3
+Player 0 5396
+Player 1 4604
+Players: 2 Cards: 3 Strategy: Random Stat_count: 3
+Player 0 8746
+Player 1 1254
+Players: 2 Cards: 3 Strategy: Smart Stat_count: 4
+Player 0 5082
+Player 1 4918
+Players: 2 Cards: 3 Strategy: Highest_stat Stat_count: 4
+Player 1 4776
+Player 0 5224
+Players: 2 Cards: 3 Strategy: Random Stat_count: 4
+Player 0 9027
+Player 1 973
+Players: 2 Cards: 4 Strategy: Smart Stat_count: 2
+Player 0 5296
+Player 1 4704
+Players: 2 Cards: 4 Strategy: Highest_stat Stat_count: 2
+Player 1 4165
+Player 0 5835
+Players: 2 Cards: 4 Strategy: Random Stat_count: 2
+Player 0 8893
+Player 1 1107
+Players: 2 Cards: 4 Strategy: Smart Stat_count: 3
+Player 1 4878
+Player 0 5122
+Players: 2 Cards: 4 Strategy: Highest_stat Stat_count: 3
+Player 1 4609
+Player 0 5391
+Players: 2 Cards: 4 Strategy: Random Stat_count: 3
+Player 0 9232
+Player 1 768
+Players: 2 Cards: 4 Strategy: Smart Stat_count: 4
+Player 0 5200
+Player 1 4800
+Players: 2 Cards: 4 Strategy: Highest_stat Stat_count: 4
+Player 0 5309
+Player 1 4691
+Players: 2 Cards: 4 Strategy: Random Stat_count: 4
+Player 0 9446
+Player 1 554
+Players: 2 Cards: 5 Strategy: Smart Stat_count: 2
+Player 1 4639
+Player 0 5361
+Players: 2 Cards: 5 Strategy: Highest_stat Stat_count: 2
+Player 0 6096
+Player 1 3904
+Players: 2 Cards: 5 Strategy: Random Stat_count: 2
+Player 0 9262
+Player 1 738
+Players: 2 Cards: 5 Strategy: Smart Stat_count: 3
+Player 1 4806
+Player 0 5194
+Players: 2 Cards: 5 Strategy: Highest_stat Stat_count: 3
+Player 1 4486
+Player 0 5514
+Players: 2 Cards: 5 Strategy: Random Stat_count: 3
+Player 0 9551
+Player 1 449
+Players: 2 Cards: 5 Strategy: Smart Stat_count: 4
+Player 1 4844
+Player 0 5156
+Players: 2 Cards: 5 Strategy: Highest_stat Stat_count: 4
+Player 0 5253
+Player 1 4747
+Players: 2 Cards: 5 Strategy: Random Stat_count: 4
+Player 0 9673
+Player 1 327
+Players: 2 Cards: 6 Strategy: Smart Stat_count: 2
+Player 0 5257
+Player 1 4743
+Players: 2 Cards: 6 Strategy: Highest_stat Stat_count: 2
+Player 0 6190
+Player 1 3810
+Players: 2 Cards: 6 Strategy: Random Stat_count: 2
+Player 0 9498
+Player 1 502
+Players: 2 Cards: 6 Strategy: Smart Stat_count: 3
+Player 0 5183
+Player 1 4817
+Players: 2 Cards: 6 Strategy: Highest_stat Stat_count: 3
+Player 1 4620
+Player 0 5380
+Players: 2 Cards: 6 Strategy: Random Stat_count: 3
+Player 0 9688
+Player 1 312
+Players: 2 Cards: 6 Strategy: Smart Stat_count: 4
+Player 0 5100
+Player 1 4900
+Players: 2 Cards: 6 Strategy: Highest_stat Stat_count: 4
+Player 1 4889
+Player 0 5111
+Players: 2 Cards: 6 Strategy: Random Stat_count: 4
+Player 0 9824
+Player 1 176
+Players: 3 Cards: 3 Strategy: Smart Stat_count: 2
+Player 1 3324
+Player 0 3571
+Player 2 3105
+Players: 3 Cards: 3 Strategy: Highest_stat Stat_count: 2
+Player 1 3063
+Player 2 2826
+Player 0 4111
+Players: 3 Cards: 3 Strategy: Random Stat_count: 2
+Player 0 6705
+Player 1 1755
+Player 2 1540
+Players: 3 Cards: 3 Strategy: Smart Stat_count: 3
+Player 2 3242
+Player 0 3487
+Player 1 3271
+Players: 3 Cards: 3 Strategy: Highest_stat Stat_count: 3
+Player 2 3143
+Player 0 3698
+Player 1 3159
+Players: 3 Cards: 3 Strategy: Random Stat_count: 3
+Player 0 7020
+Player 1 1571
+Player 2 1409
+Players: 3 Cards: 3 Strategy: Smart Stat_count: 4
+Player 0 3404
+Player 1 3348
+Player 2 3248
+Players: 3 Cards: 3 Strategy: Highest_stat Stat_count: 4
+Player 1 3277
+Player 0 3607
+Player 2 3116
+Players: 3 Cards: 3 Strategy: Random Stat_count: 4
+Player 1 1508
+Player 2 1096
+Player 0 7396
+Players: 3 Cards: 4 Strategy: Smart Stat_count: 2
+Player 0 3663
+Player 1 3280
+Player 2 3057
+Players: 3 Cards: 4 Strategy: Highest_stat Stat_count: 2
+Player 2 2683
+Player 0 4263
+Player 1 3054
+Players: 3 Cards: 4 Strategy: Random Stat_count: 2
+Player 0 7198
+Player 1 1494
+Player 2 1308
+Players: 3 Cards: 4 Strategy: Smart Stat_count: 3
+Player 1 3321
+Player 0 3599
+Player 2 3080
+Players: 3 Cards: 4 Strategy: Highest_stat Stat_count: 3
+Player 1 3277
+Player 2 3091
+Player 0 3632
+Players: 3 Cards: 4 Strategy: Random Stat_count: 3
+Player 0 7719
+Player 2 999
+Player 1 1282
+Players: 3 Cards: 4 Strategy: Smart Stat_count: 4
+Player 1 3283
+Player 2 3174
+Player 0 3543
+Players: 3 Cards: 4 Strategy: Highest_stat Stat_count: 4
+Player 2 3137
+Player 1 3266
+Player 0 3597
+Players: 3 Cards: 4 Strategy: Random Stat_count: 4
+Player 0 8030
+Player 1 1162
+Player 2 808
+Players: 3 Cards: 5 Strategy: Smart Stat_count: 2
+Player 1 3308
+Player 0 3715
+Player 2 2977
+Players: 3 Cards: 5 Strategy: Highest_stat Stat_count: 2
+Player 2 2650
+Player 1 2926
+Player 0 4424
+Players: 3 Cards: 5 Strategy: Random Stat_count: 2
+Player 2 1029
+Player 0 7781
+Player 1 1190
+Players: 3 Cards: 5 Strategy: Smart Stat_count: 3
+Player 1 3270
+Player 2 3147
+Player 0 3583
+Players: 3 Cards: 5 Strategy: Highest_stat Stat_count: 3
+Player 0 3498
+Player 1 3369
+Player 2 3133
+Players: 3 Cards: 5 Strategy: Random Stat_count: 3
+Player 0 8152
+Player 1 1061
+Player 2 787
+Players: 3 Cards: 5 Strategy: Smart Stat_count: 4
+Player 0 3483
+Player 2 3120
+Player 1 3397
+Players: 3 Cards: 5 Strategy: Highest_stat Stat_count: 4
+Player 1 3358
+Player 0 3406
+Player 2 3236
+Players: 3 Cards: 5 Strategy: Random Stat_count: 4
+Player 0 8466
+Player 1 971
+Player 2 563
+Players: 3 Cards: 6 Strategy: Smart Stat_count: 2
+Player 1 3248
+Player 0 3879
+Player 2 2873
+Players: 3 Cards: 6 Strategy: Highest_stat Stat_count: 2
+Player 0 4473
+Player 1 3060
+Player 2 2467
+Players: 3 Cards: 6 Strategy: Random Stat_count: 2
+Player 0 8155
+Player 1 1009
+Player 2 836
+Players: 3 Cards: 6 Strategy: Smart Stat_count: 3
+Player 0 3558
+Player 2 3087
+Player 1 3355
+Players: 3 Cards: 6 Strategy: Highest_stat Stat_count: 3
+Player 1 3361
+Player 2 3264
+Player 0 3375
+Players: 3 Cards: 6 Strategy: Random Stat_count: 3
+Player 0 8555
+Player 2 623
+Player 1 822
+Players: 3 Cards: 6 Strategy: Smart Stat_count: 4
+Player 0 3572
+Player 1 3306
+Player 2 3122
+Players: 3 Cards: 6 Strategy: Highest_stat Stat_count: 4
+Player 1 3563
+Player 2 3342
+Player 0 3095
+Players: 3 Cards: 6 Strategy: Random Stat_count: 4
+Player 0 8810
+Player 1 798
+Player 2 392
+Players: 4 Cards: 3 Strategy: Smart Stat_count: 2
+Player 0 2824
+Player 3 2245
+Player 2 2378
+Player 1 2553
+Players: 4 Cards: 3 Strategy: Highest_stat Stat_count: 2
+Player 2 2257
+Player 3 2018
+Player 0 3232
+Player 1 2493
+Players: 4 Cards: 3 Strategy: Random Stat_count: 2
+Player 2 1578
+Player 3 1366
+Player 1 1663
+Player 0 5393
+Players: 4 Cards: 3 Strategy: Smart Stat_count: 3
+Player 3 2377
+Player 0 2592
+Player 1 2510
+Player 2 2521
+Players: 4 Cards: 3 Strategy: Highest_stat Stat_count: 3
+Player 1 2480
+Player 2 2344
+Player 3 2423
+Player 0 2753
+Players: 4 Cards: 3 Strategy: Random Stat_count: 3
+Player 0 5771
+Player 2 1420
+Player 1 1550
+Player 3 1259
+Players: 4 Cards: 3 Strategy: Smart Stat_count: 4
+Player 3 2362
+Player 1 2511
+Player 0 2628
+Player 2 2499
+Players: 4 Cards: 3 Strategy: Highest_stat Stat_count: 4
+Player 1 2487
+Player 3 2457
+Player 0 2623
+Player 2 2433
+Players: 4 Cards: 3 Strategy: Random Stat_count: 4
+Player 0 5973
+Player 2 1409
+Player 1 1608
+Player 3 1010
+Players: 4 Cards: 4 Strategy: Smart Stat_count: 2
+Player 2 2405
+Player 0 2874
+Player 3 2132
+Player 1 2589
+Players: 4 Cards: 4 Strategy: Highest_stat Stat_count: 2
+Player 1 2349
+Player 2 2223
+Player 0 3404
+Player 3 2024
+Players: 4 Cards: 4 Strategy: Random Stat_count: 2
+Player 0 6070
+Player 2 1308
+Player 3 1223
+Player 1 1399
+Players: 4 Cards: 4 Strategy: Smart Stat_count: 3
+Player 0 2594
+Player 3 2339
+Player 1 2638
+Player 2 2429
+Players: 4 Cards: 4 Strategy: Highest_stat Stat_count: 3
+Player 1 2614
+Player 3 2330
+Player 2 2444
+Player 0 2612
+Players: 4 Cards: 4 Strategy: Random Stat_count: 3
+Player 0 6440
+Player 2 1205
+Player 1 1389
+Player 3 966
+Players: 4 Cards: 4 Strategy: Smart Stat_count: 4
+Player 2 2463
+Player 1 2598
+Player 0 2655
+Player 3 2284
+Players: 4 Cards: 4 Strategy: Highest_stat Stat_count: 4
+Player 2 2511
+Player 1 2528
+Player 0 2464
+Player 3 2497
+Players: 4 Cards: 4 Strategy: Random Stat_count: 4
+Player 0 6769
+Player 1 1454
+Player 2 1039
+Player 3 738
+Players: 4 Cards: 5 Strategy: Smart Stat_count: 2
+Player 1 2654
+Player 2 2360
+Player 0 2940
+Player 3 2046
+Players: 4 Cards: 5 Strategy: Highest_stat Stat_count: 2
+Player 2 2057
+Player 1 2548
+Player 0 3560
+Player 3 1835
+Players: 4 Cards: 5 Strategy: Random Stat_count: 2
+Player 0 6651
+Player 2 1074
+Player 3 921
+Player 1 1354
+Players: 4 Cards: 5 Strategy: Smart Stat_count: 3
+Player 2 2380
+Player 0 2694
+Player 3 2314
+Player 1 2612
+Players: 4 Cards: 5 Strategy: Highest_stat Stat_count: 3
+Player 0 2358
+Player 1 2679
+Player 3 2427
+Player 2 2536
+Players: 4 Cards: 5 Strategy: Random Stat_count: 3
+Player 3 848
+Player 0 6837
+Player 1 1309
+Player 2 1006
+Players: 4 Cards: 5 Strategy: Smart Stat_count: 4
+Player 0 2658
+Player 2 2450
+Player 1 2554
+Player 3 2338
+Players: 4 Cards: 5 Strategy: Highest_stat Stat_count: 4
+Player 0 2265
+Player 1 2652
+Player 3 2441
+Player 2 2642
+Players: 4 Cards: 5 Strategy: Random Stat_count: 4
+Player 0 7280
+Player 1 1351
+Player 2 856
+Player 3 513
+Players: 4 Cards: 6 Strategy: Smart Stat_count: 2
+Player 1 2697
+Player 0 3067
+Player 3 1928
+Player 2 2308
+Players: 4 Cards: 6 Strategy: Highest_stat Stat_count: 2
+Player 2 2064
+Player 1 2500
+Player 3 1794
+Player 0 3642
+Players: 4 Cards: 6 Strategy: Random Stat_count: 2
+Player 0 7045
+Player 2 950
+Player 1 1157
+Player 3 848
+Players: 4 Cards: 6 Strategy: Smart Stat_count: 3
+Player 1 2628
+Player 2 2407
+Player 0 2789
+Player 3 2176
+Players: 4 Cards: 6 Strategy: Highest_stat Stat_count: 3
+Player 1 2713
+Player 2 2712
+Player 3 2493
+Player 0 2082
+Players: 4 Cards: 6 Strategy: Random Stat_count: 3
+Player 0 7414
+Player 1 1102
+Player 2 849
+Player 3 635
+Players: 4 Cards: 6 Strategy: Smart Stat_count: 4
+Player 1 2568
+Player 2 2447
+Player 0 2731
+Player 3 2254
+Players: 4 Cards: 6 Strategy: Highest_stat Stat_count: 4
+Player 2 2664
+Player 1 2782
+Player 0 1891
+Player 3 2663
+Players: 4 Cards: 6 Strategy: Random Stat_count: 4
+Player 0 7702
+Player 1 1182
+Player 2 745
+Player 3 371

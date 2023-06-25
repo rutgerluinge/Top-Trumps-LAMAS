@@ -102,6 +102,8 @@ class Game:
             if self.config.generate_kripke:
                 self.createKripkeModel()
             playedCards, winner, stat_idx = self.play_round()
+            for key, card in playedCards.items():
+                print(card.name)
             if self.update_game_state(playedCards, winner, stat_idx):
                 break
 
@@ -109,7 +111,7 @@ class Game:
         """method which return player idx which should start next round, if no winner yet (first round) player 0
         starts"""
         if self.last_winner is None:
-            return self.state.players[start_player_idx]
+            return self.state.players[random.randint(0,len(self.state.players) - len(self.eliminated_players) - 1)]
         return self.last_winner
 
     def play_round(self):
@@ -124,9 +126,16 @@ class Game:
         for player in self.state.players:
             if player.get_name() in self.eliminated_players:
                 continue
+            #print(stat_idx)
             round_result[player] = player.match_stat(stat_idx=stat_idx)
 
         # sorted list of stat values in play
+        if not isinstance(next(iter(round_result.values())), np.int32):
+            print(round_result)
+            print(stat_idx)
+            print(self.last_chosen_stat)
+            print(start_player)
+            
         round_result = dict(
             sorted(round_result.items(), key=lambda x: x[1], reverse=True)
         )  # todo change this for ties!
@@ -181,7 +190,7 @@ class Game:
         self.last_winner = winner
         # check if we have a winner
         if self.has_winner():
-            print("Game is over, ", players[0].get_name(), " won the game!")
+            #print("Game is over, ", players[0].get_name(), " won the game!")
             return True
         self.round += 1
 
@@ -351,6 +360,9 @@ class Game:
         graph.add_nodes_from(worlds)
         graph.add_edges_from(edges)
         self.state.kripkeModel = graph
+
+        print(len(worlds))
+        print(len(edges))
 
         self.showKripkeModel()
 
