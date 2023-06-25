@@ -16,25 +16,47 @@ def main():
     config_two.player_count = 4
     config_two.game_mode = cfg.GameMode.EPISTEMIC_POINT_LIMIT
 
-
     resultstxt = open("results.txt", "w+")
     # start the batch
-    for players in range(2,5):
-        for cards in range(3,7):
-            for stat in range(2,5):
-                for strategy in range(0,3):
-                    
+    for players in range(2, 5):
+        for cards in range(3, 7):
+            for stat in range(2, 5):
+                for strategy in range(0, 3):
                     config.player_count = players
                     config.cards_pp = cards
                     config.stats_count = stat
                     if strategy == 0:
-                        resultstxt.write("Players: " + str(players) + " Cards: " + str(cards) + " Strategy: Smart Stat_count: " + str(stat) + "\n")
+                        resultstxt.write(
+                            "Players: "
+                            + str(players)
+                            + " Cards: "
+                            + str(cards)
+                            + " Strategy: Smart Stat_count: "
+                            + str(stat)
+                            + "\n"
+                        )
                         config.dummy_strategy = cfg.StrategyEnum.SMARTSTAT
                     elif strategy == 1:
-                        resultstxt.write("Players: " + str(players) + " Cards: " + str(cards) + " Strategy: Highest_stat Stat_count: " + str(stat) + "\n")
+                        resultstxt.write(
+                            "Players: "
+                            + str(players)
+                            + " Cards: "
+                            + str(cards)
+                            + " Strategy: Highest_stat Stat_count: "
+                            + str(stat)
+                            + "\n"
+                        )
                         config.dummy_strategy = cfg.StrategyEnum.HIGHSTAT
                     elif strategy == 2:
-                        resultstxt.write("Players: " + str(players) + " Cards: " + str(cards) + " Strategy: Random Stat_count: " + str(stat) + "\n")
+                        resultstxt.write(
+                            "Players: "
+                            + str(players)
+                            + " Cards: "
+                            + str(cards)
+                            + " Strategy: Random Stat_count: "
+                            + str(stat)
+                            + "\n"
+                        )
                         config.dummy_strategy = cfg.StrategyEnum.RANDOMSTAT
                     results = batch_run(
                         mdl.TopTrumpsModel,
@@ -59,12 +81,24 @@ def main():
                     # NOTE: this does combine player names from different configurations
                     # run only a single configuration OR differentiate the configurations in the
                     # DataCollector
-                    print("Players:", players, "Cards:", cards, "Strategies", strategy, "Statcount:", stat)
+                    if config.debug:
+                        print(
+                            "Players:",
+                            players,
+                            "Cards:",
+                            cards,
+                            "Strategies",
+                            strategy,
+                            "Statcount:",
+                            stat,
+                        )
                     for player in win_counts:
                         # in case of a tie, None will be reported as the winner
-                        resultstxt.write(str(player) + " " + str(win_counts[player]) + "\n")
-                        print(str(player) + " " + str(win_counts[player]))
-                
+                        resultstxt.write(
+                            str(player) + " " + str(win_counts[player]) + "\n"
+                        )
+                        if config.debug:
+                            print(str(player) + " " + str(win_counts[player]))
 
 
 if __name__ == "__main__":

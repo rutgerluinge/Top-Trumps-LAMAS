@@ -105,8 +105,6 @@ class Game:
             if self.config.generate_kripke:
                 self.createKripkeModel()
             playedCards, winner, stat_idx = self.play_round()
-            for key, card in playedCards.items():
-                print(card.name)
             if self.update_game_state(playedCards, winner, stat_idx):
                 break
 
@@ -133,15 +131,7 @@ class Game:
         for player in self.state.players:
             if player.get_name() in self.eliminated_players:
                 continue
-            # print(stat_idx)
             round_result[player] = player.match_stat(stat_idx=stat_idx)
-
-        # sorted list of stat values in play
-        if not isinstance(next(iter(round_result.values())), np.int32):
-            print(round_result)
-            print(stat_idx)
-            print(self.last_chosen_stat)
-            print(start_player)
 
         round_result = dict(
             sorted(round_result.items(), key=lambda x: x[1], reverse=True)
@@ -189,7 +179,7 @@ class Game:
             self.print()
 
         for key, value in self.eliminated_players.items():
-            if value == self.round:
+            if self.config.debug and value == self.round:
                 print(f"player: {key}, got eliminated in round {value}")
 
         players = self.players_in_game()
@@ -382,9 +372,9 @@ class Game:
         graph.add_nodes_from(worlds)
         graph.add_edges_from(edges)
         self.state.kripkeModel = graph
-
-        print(len(worlds))
-        print(len(edges))
+        if self.config.debug:
+            print(len(worlds))
+            print(len(edges))
 
         self.showKripkeModel()
 
@@ -398,7 +388,8 @@ class Game:
         }
 
         nx.draw_circular(self.state.kripkeModel, **options)
-        print("show_plot")
+        if self.config.debug:
+            print("show_plot")
         plt.show()
 
     # Function to check which possible worlds are no longer possible due to an agents belief
