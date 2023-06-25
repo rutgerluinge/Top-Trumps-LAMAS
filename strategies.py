@@ -71,6 +71,8 @@ class KnowledgeStrategy(Strategy):
         max_odds = max(odds)
         stat_idx = [i for i, value in enumerate(odds) if value == max_odds]
         if len(stat_idx) == 1:
+            if np.argmax(odds) == None:
+                return 0
             return np.argmax(odds)
         else:
             maximum_stat = 0
@@ -80,6 +82,8 @@ class KnowledgeStrategy(Strategy):
                     maximum_stat = top_card.stats[idx]
                     maximum_stat_idx = idx
 
+            if maximum_stat_idx == None:
+                return 0
             return maximum_stat_idx
 
     def __str__(self) -> str:

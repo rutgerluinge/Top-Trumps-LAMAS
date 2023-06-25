@@ -32,7 +32,7 @@ GAME_MODE = GameMode.EPISTEMIC_ROUND_LIMIT
 # maximum score or round number in epistemic game modes
 MAX_ROUND_OR_SCORE = 10
 # number of games to play when running the batch mode
-BATCH_MODE_NUMBER_OF_RUNS = 10
+BATCH_MODE_NUMBER_OF_RUNS = 10000
 
 #
 GENERATE_KRIPKE_MODEL = False

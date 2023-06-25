@@ -5,3 +5,4 @@ __pycache__/
 
 # debug data
 *.out
+results.txt

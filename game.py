@@ -112,7 +112,11 @@ class Game:
         """method which return player idx which should start next round, if no winner yet (first round) player 0
         starts"""
         if self.last_winner is None:
-            return self.state.players[start_player_idx]
+            return self.state.players[
+                random.randint(
+                    0, len(self.state.players) - len(self.eliminated_players) - 1
+                )
+            ]
         return self.last_winner
 
     def play_round(self):
@@ -129,7 +133,6 @@ class Game:
                 continue
             round_result[player] = player.match_stat(stat_idx=stat_idx)
 
-        # sorted list of stat values in play
         round_result = dict(
             sorted(round_result.items(), key=lambda x: x[1], reverse=True)
         )  # todo change this for ties!
@@ -176,7 +179,7 @@ class Game:
             self.print()
 
         for key, value in self.eliminated_players.items():
-            if value == self.round:
+            if self.config.debug and value == self.round:
                 print(f"player: {key}, got eliminated in round {value}")
 
         players = self.players_in_game()
@@ -369,6 +372,9 @@ class Game:
         graph.add_nodes_from(worlds)
         graph.add_edges_from(edges)
         self.state.kripkeModel = graph
+        if self.config.debug:
+            print(len(worlds))
+            print(len(edges))
 
         self.showKripkeModel()
 
@@ -382,7 +388,8 @@ class Game:
         }
 
         nx.draw_circular(self.state.kripkeModel, **options)
-        print("show_plot")
+        if self.config.debug:
+            print("show_plot")
         plt.show()
 
     # Function to check which possible worlds are no longer possible due to an agents belief
